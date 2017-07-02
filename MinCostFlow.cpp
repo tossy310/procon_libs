@@ -18,15 +18,15 @@ public:
   T min_cost_flow(int s, int t, T f){
     T res = 0;
     fill(all(h), 0);
-    // 負の閉路除去が必要なとき
+    // 負の辺除去が必要なとき
     // rep(v,Graph.size()){
-  	// 	rep(j,Graph[v].size()){
-  	// 		edge &e = Graph[v][j];
-  	// 		if(e.cap==0) continue;
-  	// 		int u = e.to;
-  	// 		h[u] = min(h[u],h[v]+e.cost);
-  	// 	}
-  	// }
+    //   rep(j,Graph[v].size()){
+    //     edge &e = Graph[v][j];
+    //     if(e.cap==0) continue;
+    //     int u = e.to;
+    //     h[u] = min(h[u],h[v]+e.cost);
+    //   }
+    // }
     while(f>0){
       priority_queue<P, vector<P>, greater<P>> pq;
       fill(all(d), INF);
