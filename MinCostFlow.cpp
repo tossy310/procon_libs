@@ -2,7 +2,7 @@ template<typename T>
 class MinCostFlow{
 private:
   struct edge{int to; T cap, cost; int rev;};
-  using P = pair<int,int>;
+  using P = pair<T,int>;
   vector<vector<edge> > Graph;
   vector<int> prevv, preve;
   vector<T> h, d; // ポテンシャル，最短距離
