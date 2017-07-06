@@ -1,10 +1,13 @@
 # 競技プログラミング用ライブラリ
 
-* atcoder [tossy](https://atcoder.jp/user/tossy)
-* codeforces [tossy](http://codeforces.com/profile/tossy)
-* topcoder [tossy](https://www.topcoder.com/members/tossy/)
-* yukicoder [tossy](https://yukicoder.me/users/2025)
-* poj [tossy](http://poj.org/userstatus?user_id=tossy)
+ユーザ名tossyで参加しています．
 
-主に蟻本ベースに変更を加えたものになっています．
-勝手に使っても構わないですが，正しく実装されている保証はありません．
+* [atcoder](https://atcoder.jp/user/tossy)
+* [codeforces](http://codeforces.com/profile/tossy)
+* [topcoder](https://www.topcoder.com/members/tossy/)
+* [yukicoder](https://yukicoder.me/users/2025)
+* [CS Academy](https://csacademy.com/user/tossy)
+* [poj](http://poj.org/userstatus?user_id=tossy)
+
+蟻本をベースに変更を加えたものが多いです．
+勝手に使って構わないですが，正しく実装されている保証はありません．
