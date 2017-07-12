@@ -70,7 +70,6 @@ public:
       Point q = *begin(hull);
       return q.X == p.X && q.Y >= p.Y;
     }
-    // hull.size() >= 2
     auto l = begin(hull);
     auto r = --end(hull);
     if(p.X < l->X || p.X > r->X) return false;
@@ -79,7 +78,7 @@ public:
     if( q1==end(hull) ){
       return (--q1)->Y >= p.Y;
     }
-    auto q2 = q1--; //dbg(*q1,*q2, q2==end(hull));
+    auto q2 = q1--;
     // q1.x <= p.x < q2.x
     return cross(p - *q1, *q2 - *q1) >= -EPS;
   }
@@ -90,7 +89,6 @@ public:
     return bu==true && bl==true;
   }
 
-  // only for upper hull
   void add(set<Point> &hull, Point p){
     if(hull.size()==0){
       hull.insert(p);

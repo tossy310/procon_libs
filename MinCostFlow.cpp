@@ -18,7 +18,7 @@ public:
   T min_cost_flow(int s, int t, T f){
     T res = 0;
     fill(all(h), 0);
-    // 負の辺除去が必要なとき
+    // 負の辺が含まれるとき
     // rep(v,Graph.size()){
     //   rep(j,Graph[v].size()){
     //     edge &e = Graph[v][j];

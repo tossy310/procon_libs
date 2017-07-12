@@ -64,7 +64,7 @@ public:
     }
     return true;
   }
-  inline int operator[](int i){ return res[i]; }
+  inline bool operator[](int i){ return res[i]; }
 };
 
 
