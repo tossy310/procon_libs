@@ -2,6 +2,9 @@
 // TODO: classとしてのインタフェース決定
 
 // === global ===
+#define MOD 1000000007
+#define DOM 1000000009
+#define BASE 1000000021
 long pow1[100005], pow2[100005];
 long hashs1[100005], hashs2[100005], hasht1[100005], hasht2[100005];
 
