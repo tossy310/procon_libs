@@ -1,20 +1,51 @@
-using Point = complex<long>;
+using Point = complex<double>;
 const double EPS = 1e-8;
 #define X real()
 #define Y imag()
 namespace std {
-  bool operator<(const Point a, const Point b) {
+  bool operator<(const Point a, const Point b){
     return a.X != b.X ? a.X < b.X : a.Y < b.Y;
   }
 }
 
-// 内積　dot(a,b) = |a||b|cosθ
-double dot(Point a, Point b){
-  return a.X*b.X + a.Y*b.Y;
+// 内積 dot(a,b) = |a||b|cosθ
+double dot(Point a, Point b){ return a.X*b.X + a.Y*b.Y; }
+// 外積 cross(a,b) = |a||b|sinθ
+double cross(Point a, Point b){ return a.X*b.Y - a.Y*b.X; }
+
+// AB からみて AC がどの方向にあるか
+int ccw(Point a, Point b, Point c){
+  b -= a;  c -= a;
+  if(cross(b,c) >  EPS) return +1;  // ccw
+  if(cross(b,c) < -EPS) return -1;  // ccw
+  if(dot(b,c)   < -EPS) return +2;  // c--a--b on line
+  if(norm(b) < norm(c)) return -2;  // a--b--c on line or a==b
+  return 0;                          // a--c--b on line or a==c or b==c
 }
-// 外積　cross(a,b) = |a||b|sinθ
-double cross(Point a, Point b){
-  return a.X*b.Y - a.Y*b.X;
+
+bool isecSP(Point a1, Point a2, Point b){
+  return !ccw(a1, a2, b);
+}
+bool isecSS(Point a1, Point a2, Point b1, Point b2){
+  return ccw(a1, a2, b1)*ccw(a1, a2, b2) <= 0 && ccw(b1, b2, a1)*ccw(b1, b2, a2) <= 0;
+}
+
+// 点pの直線a1-a2への射影点
+Point proj(Point a1, Point a2, Point p){
+  return a1 + dot(a2-a1, p-a1)/norm(a2-a1) * (a2-a1);
+}
+
+double distLP(Point a1, Point a2, Point p){
+  return abs(proj(a1, a2, p) - p);
+}
+double distSP(Point a1, Point a2, Point p){
+  Point r = proj(a1, a2, p);
+  if(isecSP(a1, a2, r)) return abs(r-p);
+  return min(abs(a1-p), abs(a2-p));
+}
+double distSS(Point a1, Point a2, Point b1, Point b2){
+  if(isecSS(a1, a2, b1, b2)) return 0;
+  return min(min(distSP(a1, a2, b1), distSP(a1, a2, b2)), min(distSP(b1, b2, a1), distSP(b1, b2, a2)));
 }
 
 
