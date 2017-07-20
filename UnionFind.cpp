@@ -18,6 +18,6 @@ public:
       if(rank[x]==rank[y]) rank[x]++;
     }
   }
-  bool same(int x, int y){ return find(x) == find(y); }
-  int size(int x){ return -par[find(x)]; }
+  inline bool same(int x, int y){ return find(x) == find(y); }
+  inline int size(int x){ return -par[find(x)]; }
 };
