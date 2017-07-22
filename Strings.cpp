@@ -1,5 +1,5 @@
 // MP配列 : a[i] = s[0,i)の接頭辞と接尾辞が最大何文字一致しているか O(N)
-vector<int> build_kmp(const string &s){
+vector<int> build_mp(const string &s){
   int n = s.size();
   vector<int> a(n+1, -1);
   int j = -1;
@@ -26,6 +26,36 @@ vector<int> zAlgorithm(const string &s){
     j -= k;
   }
   return a;
+}
+
+// KMP配列 O(N)
+vector<int> build_kmp(const string &s){
+  int n = s.size();
+  vector<int> a(n+1, -1);
+  int j = -1;
+  rep(i,n){
+    while(j>=0 && s[i]!=s[j]) j = a[j];
+    j++;
+    if(s[i+1]==s[j]) a[i+1] = a[j];
+    else a[i+1]=j;
+  }
+  return a;
+}
+
+vector<int> kmp_match(const string &txt, const string &pat, const vector<int> &skip){
+  int n = txt.size();
+  int m = pat.size();
+  vector<int> ret;
+  int j = 0;
+  rep(i,n){
+    while(j>-1 && txt[i] != pat[j]) j = skip[j];
+    j++;
+    if(j==m){
+      ret.pb(i-m+1);
+      j = skip[m];
+    }
+  }
+  return ret;
 }
 
 // manacher : a[i] = s[i] を中心とする最長の回文の半径 O(N)
