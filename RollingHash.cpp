@@ -1,60 +1,39 @@
-// とりあえずACコードのコピペを貼っておく．
-// TODO: classとしてのインタフェース決定
+// TODO template使ってLENの定義周りを綺麗にしたい
 
-// === global ===
-#define MOD 1000000007
-#define DOM 1000000009
-#define BASE 1000000021
-long pow1[100005], pow2[100005];
-long hashs1[100005], hashs2[100005], hasht1[100005], hasht2[100005];
-
-// === loal ===
-string s,t;
-cin>>s>>t;
-int n = s.size();
-int m = t.size();
-
-pow1[0]=1;
-pow2[0]=1;
-rep(i,100000) pow1[i+1] = pow1[i]*MOD % BASE;
-rep(i,100000) pow2[i+1] = pow2[i]*DOM % BASE;
-
-auto hashinit = [&](long *arr, string &str, const long mod){
-  int l = str.size();
-  arr[0] = str[0];
-  repl(i,1,l) arr[i] = (arr[i-1]*mod + str[i])%BASE;
-};
-
-hashinit(hashs1, s, MOD);
-hashinit(hashs2, s, DOM);
-hashinit(hasht1, t, MOD);
-hashinit(hasht2, t, DOM);
-
-auto gethash = [&](long *arr, int from, int l, long *powarr){
-  if(from==0) return arr[l-1];
-  long ret = arr[from+l-1] - arr[from-1]*powarr[l];
-  ret %= BASE;
-  if(ret<0) ret += BASE;
-  return ret;
-};
-
-// s[si], t[ti] からはじまるl文字
-auto hasheq = [&](int si, int ti, int l){
-  long h1 = gethash(hashs1, si, l, pow1);
-  long h2 = gethash(hasht1, ti, l, pow1);
-  if(h1!=h2) return false;
-  long h3 = gethash(hashs2, si, l, pow2);
-  long h4 = gethash(hasht2, ti, l, pow2);
-  return h3==h4;
-};
-
-auto eqlen = [&](int si, int ti){
-  if(s[si]!=t[ti]) return 0;
-  int l=1, r=min(n-si, m-ti)+1;
-  while(r-l>1){
-    int mid = (l+r)/2;
-    if(hasheq(si,ti,mid)) l = mid;
-    else r = mid;
+#define LEN 200000
+class RollingHash {
+private:
+  static const long B1 = 10007, B2 = 10009;
+  static const long MD1 = 1000000007, MD2 = 1000000009;
+  static long pow1[], pow2[];
+public:
+  static void initHash(){
+    pow1[0]=1;
+    rep(i,LEN+4) pow1[i+1] = pow1[i]*B1 % MD1;
+    pow2[0]=1;
+    rep(i,LEN+4) pow2[i+1] = pow2[i]*B2 % MD2;
   }
-  return l;
+  long h1[LEN+5], h2[LEN+5];
+  int n;
+  string &s;
+  RollingHash(string &str) : s(str){
+    if(pow1[0] == 0 || pow2[0]==0) initHash();
+    n = s.size();
+    assert(n<=LEN);
+    h1[0] = h2[0] = s[0];
+    repl(i,1,n){
+      h1[i] = (h1[i-1]*B1 + s[i])%MD1;
+      h2[i] = (h2[i-1]*B2 + s[i])%MD2;
+    }
+  }
+  pair<long,long> get(int from, int l){
+    if(l == 0) return mp(0L,0L);
+    if(from == 0) return mp(h1[l-1], h2[l-1]);
+    long ret1 = (h1[from+l-1] - h1[from-1]*pow1[l])%MD1;
+    if(ret1<0) ret1 += MD1;
+    long ret2 = (h2[from+l-1] - h2[from-1]*pow2[l])%MD2;
+    if(ret2<0) ret2 += MD2;
+    return mp(ret1, ret2);
+  }
 };
+long RollingHash::pow1[LEN+5], RollingHash::pow2[LEN+5];
