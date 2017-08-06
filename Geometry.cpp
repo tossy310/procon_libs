@@ -1,118 +1,168 @@
-#define EPS 1e-8
-
-// 浮動小数点誤差考慮
-inline double add(double a, double b){
-  if(abs(a+b) < EPS*(abs(a) + abs(b))) return 0;
-  return a+b;
+using Point = complex<double>;
+const double EPS = 1e-8;
+#define X real()
+#define Y imag()
+namespace std {
+  bool operator<(const Point a, const Point b){
+    return a.X != b.X ? a.X < b.X : a.Y < b.Y;
+  }
 }
 
-struct Point{
-  double x,y;
-  Point() {}
-  Point(double nx, double ny) : x(nx), y(ny) {}
-  inline Point operator + (const Point p){ return Point(add(x, p.x), add(y, p.y)); }
-  inline Point operator - (const Point p){ return Point(add(x,-p.x), add(y,-p.y)); }
-  inline Point operator * (double d){ return Point(x*d, y*d); }
-  inline double dot(const Point p){ return add(x * p.x, y*p.y); }  //内積
-  inline double det(const Point p){ return add(x * p.y, -y*p.x); } //外積
-  inline double norm(){ return x*x + y*y; }
-  inline double dist(const Point & p){ return hypot(x-p.x, y-p.y); }
-  inline bool operator < (const Point & p) const {
-    if(x != p.x) return x < p.x;
-    else return y < p.y;
-  }
-  inline bool operator == (const Point & p) const {
-    return (add(x, -p.x)==0) && (add(y, -p.y)==0);
-  }
-  friend ostream& operator<<(ostream& os, const Point& p) {
-    os << "[" << p.x << "," << p.y << "]";
-    return os;
-  }
-};
+// 内積 dot(a,b) = |a||b|cosθ
+double dot(Point a, Point b){ return a.X*b.X + a.Y*b.Y; }
+// 外積 cross(a,b) = |a||b|sinθ
+double cross(Point a, Point b){ return a.X*b.Y - a.Y*b.X; }
+
+// AB からみて AC がどの方向にあるか
+int ccw(Point a, Point b, Point c){
+  b -= a;  c -= a;
+  if(cross(b,c) >  EPS) return +1;  // ccw
+  if(cross(b,c) < -EPS) return -1;  // ccw
+  if(dot(b,c)   < -EPS) return +2;  // c--a--b on line
+  if(norm(b) < norm(c)) return -2;  // a--b--c on line or a==b
+  return 0;                          // a--c--b on line or a==c or b==c
+}
+
+bool isecSP(Point a1, Point a2, Point b){
+  return !ccw(a1, a2, b);
+}
+bool isecSS(Point a1, Point a2, Point b1, Point b2){
+  return ccw(a1, a2, b1)*ccw(a1, a2, b2) <= 0 && ccw(b1, b2, a1)*ccw(b1, b2, a2) <= 0;
+}
+
+// 点pの直線a1-a2への射影点
+Point proj(Point a1, Point a2, Point p){
+  return a1 + dot(a2-a1, p-a1)/norm(a2-a1) * (a2-a1);
+}
+
+double distLP(Point a1, Point a2, Point p){
+  return abs(proj(a1, a2, p) - p);
+}
+double distSP(Point a1, Point a2, Point p){
+  Point r = proj(a1, a2, p);
+  if(isecSP(a1, a2, r)) return abs(r-p);
+  return min(abs(a1-p), abs(a2-p));
+}
+double distSS(Point a1, Point a2, Point b1, Point b2){
+  if(isecSS(a1, a2, b1, b2)) return 0;
+  return min(min(distSP(a1, a2, b1), distSP(a1, a2, b2)), min(distSP(b1, b2, a1), distSP(b1, b2, a2)));
+}
 
 
 // Graham Scan
-// 与えらえた点集合の凸包を求める
-// 左下の点(Point のoperatorに依存)から反時計回りに
-// while内の等号を抜くと辺上の点も含む．
+// O(N logN)
 vector<Point> GrahamScan(vector<Point> points){
   int n = points.size();
   sort(all(points));
   int k=0;
   vector<Point> qs(2*n);
   for(int i=0; i<n; qs[k++] = points[i++]){
-    while(k>1 && (qs[k-1] - qs[k-2]).det(points[i] - qs[k-1]) <= 0) k--;
+    while(k>1 && cross(qs[k-1] - qs[k-2], points[i] - qs[k-1]) <= 0) k--;
   }
   for(int i=n-2,t=k; i>=0; qs[k++] = points[i--]){
-    while(k>t && (qs[k-1] -qs[k-2]).det(points[i] - qs[k-1]) <= 0) k--;
+    while(k>t && cross(qs[k-1] -qs[k-2], points[i] - qs[k-1]) <= 0) k--;
   }
   qs.resize(k-1);
   return qs;
 }
 
-
 // キャリパー法 最遠点対探索，最遠距離を返す
 // 入力は凸包となっていること．
 double caliper(vector<Point> conv){
   int n = conv.size();
-  if(n==2) return conv[0].dist(conv[1]);
+  if(n==2) return abs(conv[0] - conv[1]);
   int i=0, j=0;
   rep(k, n){
     if(conv[k].x < conv[i].x) i=k;
     if(conv[k].x > conv[j].x) j=k;
   }
   // iが左端，jが右端
-  double res=conv[i].dist(conv[j]);
+  double res = abs(conv[i] - conv[j]);
   int si=i, sj=j;
   while(si != j || sj != i){
-    if( (conv[(i+1)%n]-conv[i]).det(conv[(j+1)%n]-conv[j]) < 0 ) i = (i+1)%n;
+    if( cross(conv[(i+1)%n]-conv[i], conv[(j+1)%n]-conv[j]) < 0 ) i = (i+1)%n;
     else j = (j+1)%n;
-    res = max(res, conv[i].dist(conv[j]));
+    res = max(res, abs(conv[i]-conv[j]));
   }
   return res;
 }
 
-// 点pの直線a(a1-a2)への射影点を返す
-Point proj(Point a1, Point a2, Point p) {
-  Point a = a2-a1;
-  return a1 + a * ( a.dot(p-a1)/a.norm() );
-}
 
-// 線分a1-a2上にpがあるか
-bool on_line(Point a1, Point a2, Point p){
-  Point q1 = a1-p, q2 = a2-p;
-  return (q1.det(q2) == 0) && (q1.dot(q2) <= 0);
-}
+// ConvexHull with Vertex addition
+// O((N+Q)logN)
+class AddableConvexHull {
+public:
+  set<Point> upperHull, lowerHull;
+  AddableConvexHull(){}
 
-// 線分p1-p2 と 線分p3-p4の交点を求め，resに格納．
-// if文内のu,vの等号で端点を含むかどうか分ける．（返り値に影響）
-bool line_intersection(Point &p1, Point &p2, Point &p3, Point &p4, Point &res){
-  double d =  (p2.x-p1.x)*(p4.y-p3.y) - (p2.y-p1.y)*(p4.x-p3.x);
-  double u = ((p3.x-p1.x)*(p4.y-p3.y) - (p3.y-p1.y)*(p4.x-p3.x))/d;
-  double v = ((p3.x-p1.x)*(p2.y-p1.y) - (p3.y-p1.y)*(p2.x-p1.x))/d;
-  if (u<0.0 || u>1.0 || v<0.0 || v>1.0) return false;
-  if(d==0){ // 並行のとき，trueは返せるが交点は不定
-    return on_line(p1,p2,p3) || on_line(p1,p2,p4) || on_line(p3,p4,p1) || on_line(p3,p4,p2);
+  bool isCovered(set<Point> &hull, Point p){
+    if(hull.size()==0) return false;
+    if(hull.size()==1){
+      Point q = *begin(hull);
+      return q.X == p.X && q.Y >= p.Y;
+    }
+    auto l = begin(hull);
+    auto r = --end(hull);
+    if(p.X < l->X || p.X > r->X) return false;
+
+    auto q1 = hull.upper_bound((Point){p.X, INF});
+    if( q1==end(hull) ){
+      return (--q1)->Y >= p.Y;
+    }
+    auto q2 = q1--;
+    // q1.x <= p.x < q2.x
+    return cross(p - *q1, *q2 - *q1) >= -EPS;
   }
-  res.x = p1.x + u * (p2.x - p1.x);
-  res.y = p1.y + u * (p2.y - p1.y);
-  return true;
-}
 
-
-
-Point points[50000];
-Point conv[50000];
-// Graham Scan for POJ, 引数でもとの点の個数，返り値で凸法頂点数
-// 左下の点(Point のoperatorに依存)から反時計回りに
-// while内の等号を抜くと辺上の点も含む．
-int GrahamScan(int n){
-  int k=0;
-  for(int i=0; i<n; conv[k++] = points[i++]){
-    while(k>1 && (conv[k-1] - conv[k-2]).det(points[i] - conv[k-1]) <= 0) k--;
+  bool inPolygon(Point p){
+    bool bu = isCovered(upperHull, p);
+    bool bl = isCovered(lowerHull, (Point){p.X, -p.Y});
+    return bu==true && bl==true;
   }
-  for(int i=n-2,t=k; i>=0; conv[k++] = points[i--]){
-    while(k>t && (conv[k-1] -conv[k-2]).det(points[i] - conv[k-1]) <= 0) k--;
+
+  void add(set<Point> &hull, Point p){
+    if(hull.size()==0){
+      hull.insert(p);
+      return;
+    }
+    if(hull.size()==1){
+      if(begin(hull)->X == p.X){
+        Point q = *begin(hull);
+        hull.clear();
+        hull.insert(max(p,q));
+      }
+      else {
+        hull.insert(p);
+      }
+      return;
+    }
+    if(isCovered(hull, p)) return;
+
+    // left
+    auto q1 = hull.upper_bound((Point){p.X, INF});
+    if(q1 != begin(hull)){
+      q1--;
+      while(hull.size()>1 && q1!=begin(hull)){
+        auto q2 = q1--;
+        if( cross(*q2 - p, *q1 - p) > -EPS ) break;
+        hull.erase(q2);
+      }
+    }
+    // right
+    q1 = hull.lower_bound((Point){p.X, -INF});
+    if(q1 != end(hull)){
+      while(hull.size()>1 && q1 != --end(hull)){
+        auto q2 = q1++;
+        if( cross(*q1 - p, *q2 - p) > -EPS ) break;
+        hull.erase(q2);
+      }
+    }
+
+    hull.insert(p);
   }
-  return k-1;
-}
+
+  void add(Point p){
+    add(upperHull, p);
+    add(lowerHull, (Point){p.X, -p.Y});
+  }
+};
