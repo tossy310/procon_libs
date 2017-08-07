@@ -4,9 +4,9 @@ class SegTree {
 public:
   int n;
   vector<T> data;
-  SegTree(int n_){
+  SegTree(int m){
     n=1;
-    while(n<n_) n*=2;
+    while(n<m) n*=2;
     data.resize(2*n, INF);
   }
   inline T query(int l, int r){
@@ -36,9 +36,9 @@ public:
   int n;
   vector<T> data;
   vector<int> pos;
-  SegTree(int n_){
+  SegTree(int m){
     n=1;
-    while(n<n_) n*=2;
+    while(n<m) n*=2;
     data.resize(n+1, INF);
     pos.resize(2*n, n);
   }
@@ -74,39 +74,32 @@ public:
 };
 
 
-// Segment Tree (range add, point get), INF注意
+// RAQ Segment Tree (range add, point get)
 template<typename T>
 class SegTree {
-private:
+public:
   int n;
   vector<T> data;
-public:
-  SegTree(int n_){
+  SegTree(int m){
     n=1;
-    while(n<n_) n*=2;
-    data = vector<T>(2*n-1, 0);
+    while(n<m) n*=2;
+    data = vector<T>(2*n, 0);
   }
-  void update(int a, int b, T v, int k=0, int l=0, int r=-1){
-    if(r==-1) r=n;
-    if(r<=a || b<=l) return;
-    if(a<=l && r<=b){
-      data[k]+=v;
-      return;
+  void update(int l, int r, T v){
+    for(l+=n, r+=n; l<r; l/=2, r/=2){
+      if(l&1) data[l++] += v;
+      if(r&1) data[--r] += v;
     }
-    update(a,b,v,k*2+1,l,(l+r)/2);
-    update(a,b,v,k*2+2,(l+r)/2,r);
-    return;
   }
-  T get(int idx){
-    idx += n-1;
-    T ret = data[idx];
-    while( idx>0 ){
-      idx = (idx-1) / 2;
-      ret += data[idx];
+  T get(int k){
+    k += n;
+    T ret = data[k];
+    while(k>0){
+      k = k/2;
+      ret += data[k];
     }
     return ret;
   }
-  inline T operator[](int idx){ return data[idx+n-1]; }
 };
 
 
