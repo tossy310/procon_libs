@@ -1,38 +1,81 @@
-// Segment Tree (range min, point update)
-template<typename T> // INFに注意
+// Segment Tree (range min, point update), INF注意
+template<typename T>
 class SegTree {
-private:
+public:
   int n;
   vector<T> data;
-  T _query(int a, int b, int k, int l, int r){
-    if(r<=a || b<=l) return INF;
-    if(a<=l && r<=b) return data[k];
-    T vl=_query(a,b,k*2+1,l,(l+r)/2);
-    T vr=_query(a,b,k*2+2,(l+r)/2,r);
-    return min(vl,vr);
-  }
-public:
   SegTree(int n_){
     n=1;
     while(n<n_) n*=2;
-    data.resize(2*n-1);
-    fill(all(data), INF);
+    data.resize(2*n, INF);
   }
-  void update(int k, T a){ // update data[k]=a, k(0-indexed)
-    k+=n-1;
+  inline T query(int l, int r){
+    T ret = INF;
+    for(l+=n, r+=n; l<r; l/=2, r/=2){
+      if(l&1) ret = min(ret, data[l++]);
+      if(r&1) ret = min(ret, data[--r]);
+    }
+    return ret;
+  }
+  inline void update(int k, T a){
+    k+=n;
     data[k]=a;
     while(k>0){
-      k = (k-1)/2;
-      data[k] = min(data[k*2+1], data[k*2+2]);
+      k = k/2;
+      data[k] = min(data[k*2], data[k*2+1]);
     }
   }
-  inline T query(int a, int b){return _query(a,b,0,0,n);} //min value in [a,b)
-  inline T operator[](int idx){ return data[idx+n-1]; }
-}; // END class SegTree
+  inline T operator[](int idx){ return data[idx+n]; }
+};
 
 
-// Segment Tree (range add, point get)
-template<typename T> // INFに注意
+// RMQ Position (range min position, point update), INF注意
+template<typename T>
+class SegTree {
+public:
+  int n;
+  vector<T> data;
+  vector<int> pos;
+  SegTree(int n_){
+    n=1;
+    while(n<n_) n*=2;
+    data.resize(n+1, INF);
+    pos.resize(2*n, n);
+  }
+  inline int query(int l, int r){ // position of min
+    int ret = n;
+    for(l+=n, r+=n; l<r; l/=2, r/=2){
+      if(l&1){
+        if(data[ret] >= data[pos[l]]) ret = pos[l];
+        l++;
+      }
+      if(r&1){
+        r--;
+        if(data[ret] >= data[pos[r]]) ret = pos[r];
+      }
+    }
+    return ret;
+  }
+  inline void update(int k, T a){
+    data[k]=a;
+    pos[k+n]=k;
+    k+=n;
+    while(k>0){
+      k = k/2;
+      if(data[pos[k*2]] <= data[pos[k*2+1]]){
+        pos[k] = pos[k*2];
+      }
+      else {
+        pos[k] = pos[k*2+1];
+      }
+    }
+  }
+  inline T operator[](int idx){ return data[idx]; }
+};
+
+
+// Segment Tree (range add, point get), INF注意
+template<typename T>
 class SegTree {
 private:
   int n;
@@ -64,11 +107,11 @@ public:
     return ret;
   }
   inline T operator[](int idx){ return data[idx+n-1]; }
-}; // END class SegTree
+};
 
 
 // Starry Sky Stree (Range Add, Range Max)
-// 初期値に少し注意
+// 初期値注意
 template<typename T>
 class SegTree {
 public:
@@ -116,7 +159,7 @@ public:
 
 
 // Segment Tree (Range Add, Range Sum)
-template<typename T> // INFに注意
+template<typename T>
 class SegTree {
 private:
   int n;
@@ -147,7 +190,7 @@ public:
   }
   inline void add(int a, int b, T x){ _add(a,b,x,0,0,n);} //add x in [a,b)
   inline T getSum(int a,int b){return _sum(a,b,0,0,n);} //sum in [a,b)
-}; // END class SegTree
+};
 
 
 // Lazy Propagation Segment Tree (Range update, Range sum)

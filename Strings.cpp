@@ -11,7 +11,7 @@ vector<int> build_mp(const string &s){
   return a;
 }
 
-// z-algorithm : a[i] = s と s[i,n) の最長共通接頭辞の長さ O(N)
+// z-algorithm : a[i] = s[0,n) と s[i,n) の最長共通接頭辞の長さ O(N)
 vector<int> zAlgorithm(const string &s){
   int n = s.size();
   vector<int> a(n+1,0);
