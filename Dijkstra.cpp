@@ -1,27 +1,25 @@
-struct edge {int to; long cost;};
-
-vector<vector<edge> > EG;
-vector<long> dist;
-
-// dijkstra shortest path O(E logV)
-// from:search starting node, d:array of distance, vec: directed graph
-void dijkstra(int from, vector<long> &d, vector<vector<edge> > &vec){
-  priority_queue<pair<long, int>, vector<pair<long, int> >, greater<pair<long, int> > > que; //pair<dist, idx>
+// weighted
+template<class T>
+void dijkstra(const vector<vector<pair<int,T>>> &vec, vector<T> &d, int from=0){
+  using P = pair<T,int>;
   fill(all(d), INF);
+  priority_queue<P, vector<P>, greater<P>> pq;
   d[from] = 0;
-  que.push(mp(0,from));
-  while(!que.empty()){
-    pair<long, int> p = que.top(); que.pop();
+  pq.push(mp(0,from));
+  while(!pq.empty()){
+    auto p = pq.top(); pq.pop();
     int v = p.second;
-    long dis = p.first;
-    if(d[v] < dis) continue;
-    for(edge e : vec[v]){
-      long target = dis + e.cost;
-      if(d[e.to] > target){
-        d[e.to] = target;
-        que.push(mp(d[e.to], e.to));
+    T dd = p.first;
+    if(d[v] < dd) continue;
+    for(auto to : vec[v]){
+      T nd = dd + to.second;
+      int ni = to.first;
+      if(d[ni] > nd){
+        d[ni] = nd;
+        pq.push(mp(nd, ni));
       }
     }
   }
 }
-// END dijkstra
+
+// TODO unweighted 01 dijkstra
