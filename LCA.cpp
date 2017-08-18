@@ -1,16 +1,15 @@
 vector<int> tree[100010];
 
-// have to indicate root node by init(root)
 class LCA {
-private:
-  int n,ln; // number of nodes and log n
 public:
+  int n,ln; // number of nodes and log n
   vector<vector<int> > parent;
   vector<int> depth;
-  LCA(int _n) : n(_n), depth(_n){
+  LCA(int _n, int root=-1) : n(_n), depth(_n){
     ln=0;
     while(n>(1<<ln)) ln++;  // calc log n
     parent = vector<vector<int> >(ln, vector<int>(n));
+    if(root!=-1) init(root);
   }
   void dfs(int v, int p, int d){
     parent[0][v]=p;
@@ -30,7 +29,7 @@ public:
     if(depth[u] > depth[v]) swap(u,v);
     for(int k=0; k<ln; k++){
       if((depth[v]-depth[u])>>k & 1) v = parent[k][v];
-    }  // now, depth[v] == depth[u]
+    }
     if(u==v) return u;
     for(int k=ln-1; k>=0; k--){
       if(parent[k][u] != parent[k][v]){
@@ -40,4 +39,4 @@ public:
     }
     return parent[0][u];
   }
-}; // END class LCA
+};
