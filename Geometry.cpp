@@ -2,6 +2,9 @@ using Point = complex<double>;
 const double EPS = 1e-8;
 #define X real()
 #define Y imag()
+#define LE(n,m) ((n) < (m) + EPS)
+#define GE(n,m) ((n) + EPS > (m))
+#define EQ(n,m) (abs((n)-(m)) < EPS)
 namespace std {
   bool operator<(const Point a, const Point b){
     return a.X != b.X ? a.X < b.X : a.Y < b.Y;
@@ -52,8 +55,8 @@ double distSS(Point a1, Point a2, Point b1, Point b2){
 // Graham Scan
 // O(N logN)
 vector<Point> GrahamScan(vector<Point> points){
-  int n = points.size();
-  sort(all(points));
+  uniq(points);
+  int n=points.size();
   int k=0;
   vector<Point> qs(2*n);
   for(int i=0; i<n; qs[k++] = points[i++]){
@@ -65,6 +68,48 @@ vector<Point> GrahamScan(vector<Point> points){
   qs.resize(k-1);
   return qs;
 }
+
+
+// 凸包の内部判定 O(n)
+// 領域内部なら1、境界上なら2、外部なら0
+int inConvex(Point p, const vector<Point>& conv){
+  int n = conv.size();
+  int dir = ccw(conv[0], conv[1], p);
+  rep(i,n){
+    int ccwc = ccw(conv[i], conv[(i+1)%n], p);
+    if (!ccwc) return 2;  // 境界上
+    if (ccwc != dir) return 0;
+  }
+  return 1;
+}
+
+// 凸多角形の内部判定 O(logn)
+// 領域内部なら1、境界上なら2、外部なら0
+int inConvex(Point p, const vector<Point>& conv){
+  int n = conv.size();
+  Point g = (conv[0] + conv[n/3] + conv[n*2/3])/3.0;
+  if (g == p) return 1;
+  Point gp = p - g;
+
+  int l=0, r=n;
+  while(r-l>1){
+    int mid = (l+r)/2;
+    Point gl = conv[l] - g;
+    Point gm = conv[mid] - g;
+    if(cross(gl, gm) > 0){
+      if(cross(gl, gp) >= 0 && cross(gm, gp) <= 0) r = mid;
+      else l = mid;
+    }
+    else {
+      if(cross(gl, gp) <= 0 && cross(gm, gp) >= 0) l = mid;
+      else r = mid;
+    }
+  }
+  r %= n;
+  double cr = cross(conv[l] - p, conv[r] - p);
+  return EQ(cr, 0) ? 2 : cr < 0 ? 0 : 1;
+}
+
 
 // キャリパー法 最遠点対探索，最遠距離を返す
 // 入力は凸包となっていること．
