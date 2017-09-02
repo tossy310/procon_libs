@@ -22,4 +22,4 @@ void dijkstra(const vector<vector<pair<int,T>>> &vec, vector<T> &d, int from=0){
   }
 }
 
-// TODO unweighted 01 dijkstra
+// TODO unweighted / 01 dijkstra
