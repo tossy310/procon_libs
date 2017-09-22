@@ -21,7 +21,7 @@ public:
     n = s.size();
     assert(n<=LEN);
     h1[0] = h2[0] = s[0];
-    repl(i,1,n){
+    rep(i,1,n){
       h1[i] = (h1[i-1]*B1 + s[i])%MD1;
       h2[i] = (h2[i-1]*B2 + s[i])%MD2;
     }

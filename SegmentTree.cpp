@@ -143,7 +143,7 @@ public:
     segAdd.resize(2*n-1);
     fill(all(segAdd), 0);
     segIdx.resize(2*n-1);
-    repl(i,n-1,2*n-1) segIdx[i] = i;
+    rep(i,n-1,2*n-1) segIdx[i] = i;
     for(int i=n-2; i>=0; i--) segIdx[i] = segIdx[2*i+1];
   }
   inline void add(int a, int b, T x){ _add(a,b,x,0,0,n);} // add x in [a,b)

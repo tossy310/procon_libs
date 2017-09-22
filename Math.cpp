@@ -54,7 +54,7 @@ long comb[300][300];
 void init_comb(){
   fill(comb[0],comb[300],0);
   comb[0][0] = 1;
-  repl(i,1,300){
+  rep(i,1,300){
     comb[i][0] = 1;
     rep(j,i) comb[i][j+1] = (comb[i-1][j]+comb[i-1][j+1])%MOD;
   }

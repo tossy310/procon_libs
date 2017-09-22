@@ -46,7 +46,7 @@ public:
       };
       sort(all(sa), comp);
       tmp[sa[0]]=0;
-      repl(i,1,n+1){
+      rep(i,1,n+1){
         tmp[sa[i]] = tmp[sa[i-1]];
         if(comp(sa[i-1], sa[i])) tmp[sa[i]]++;
       }

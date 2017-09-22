@@ -34,13 +34,13 @@ vector<double> gaussJordan(const vector<vector<double>> &A, const vector<double>
 
   rep(i,n){
     int pivot=i;
-    repl(j,i,n) if(abs(B[j][i]) > abs(B[pivot][i])) pivot = j;
+    rep(j,i,n) if(abs(B[j][i]) > abs(B[pivot][i])) pivot = j;
     swap(B[i], B[pivot]);
 
     if(abs(B[i][i]) < EPS) return vector<double>();
 
-    repl(j,i+1,n+1) B[i][j] /= B[i][i];
-    rep(j,n) if(i!=j) repl(k,i+1,n+1) B[j][k] -= B[j][i] * B[i][k];
+    rep(j,i+1,n+1) B[i][j] /= B[i][i];
+    rep(j,n) if(i!=j) rep(k,i+1,n+1) B[j][k] -= B[j][i] * B[i][k];
   }
   vector<double> x(n);
   rep(i,n) x[i] = B[i][n];
