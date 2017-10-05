@@ -9,7 +9,7 @@ public:
     while(n<m) n*=2;
     data.resize(2*n, INF);
   }
-  inline T query(int l, int r){
+  T query(int l, int r){
     T ret = INF;
     for(l+=n, r+=n; l<r; l/=2, r/=2){
       if(l&1) ret = min(ret, data[l++]);
@@ -17,7 +17,7 @@ public:
     }
     return ret;
   }
-  inline void update(int k, T a){
+  void update(int k, T a){
     k+=n;
     data[k]=a;
     while(k>0){
@@ -42,7 +42,7 @@ public:
     data.resize(n+1, INF);
     pos.resize(2*n, n);
   }
-  inline int query(int l, int r){ // position of min
+  int query(int l, int r){ // position of min
     int ret = n;
     for(l+=n, r+=n; l<r; l/=2, r/=2){
       if(l&1){
@@ -56,7 +56,7 @@ public:
     }
     return ret;
   }
-  inline void update(int k, T a){
+  void update(int k, T a){
     data[k]=a;
     pos[k+n]=k;
     k+=n;
@@ -237,6 +237,55 @@ public:
     data = vector<long>(2*n-1, 0);
     sum = vector<long>(2*n-1, 0);
   }
+};
+
+
+// 点add,区間sum,区間累積和min
+template<typename T>
+class SegTree {
+public:
+  int n;
+  vector<T> data, accMin;
+  SegTree(){}
+  SegTree(int m){
+    n=1;
+    while(n<m) n*=2;
+    data.resize(2*n, 0);
+    accMin.resize(2*n, INF);
+  }
+  T getSum(int l, int r){
+    T ret = 0;
+    for(l+=n, r+=n; l<r; l/=2, r/=2){
+      if(l&1) ret += data[l++];
+      if(r&1) ret += data[--r];
+    }
+    return ret;
+  }
+  T getAccMin(int l, int r){ // <sum, accMin>
+    pair<T,T> vl = mp(0,INF), vr = mp(0,INF);
+    for(l+=n, r+=n; l<r; l/=2, r/=2){
+      if(l&1){
+        vl = mp(vl.fi + data[l], min(vl.se, vl.fi+accMin[l]));
+        l++;
+      }
+      if(r&1){
+        r--;
+        vr = mp(data[r] + vr.fi, min(accMin[r], data[r] + vr.se));
+      }
+    }
+    return min(vl.se, vl.fi + vr.se);
+  }
+  void update(int k, T a){
+    k+=n;
+    data[k]=a;
+    accMin[k]=a;
+    while(k>0){
+      k = k/2;
+      data[k] = data[k*2] + data[k*2+1];
+      accMin[k] = min(accMin[k*2], data[k*2] + accMin[k*2+1]);
+    }
+  }
+  inline T operator[](int idx){ return data[idx+n]; }
 };
 
 

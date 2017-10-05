@@ -6,12 +6,12 @@ private:
   int n;
 public:
   BIT(int _n) : n(_n) {
-    bit = vector<T>(n+1, 0); //0初期化
+    bit = vector<T>(n+1, 0);
   }
-  void add(int v, T a){ //vは0-indexed
+  void add(int v, T a){ //0-indexed
     for(int x=v+1; x<=n; x += x&(-x)) bit[x] += a;
   }
-  T sum(int v){ //vは0-indexed
+  T sum(int v){ //0-indexed
     T ret=0;
     for(int x=v+1; x>0; x -= x&(-x)) ret += bit[x];
     return ret;
