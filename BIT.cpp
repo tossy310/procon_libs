@@ -39,19 +39,19 @@ private:
   int x,y;
 public:
   BIT2D(int _x, int _y) : x(_x), y(_y) {
-    bit = vector<vector<T> >(x+1, vector<T>(y+1)); //0初期化
+    bit = vector<vector<T> >(x+1, vector<T>(y+1, 0));
   }
-  void add(int _a, int _b, T w){ //a,bは1-indexed
-    for(int a=_a; a<=x; a += a&(-a)) {
-      for(int b=_b; b<=y; b += b&(-b)) {
+  void add(int _a, int _b, T w){ //0-indexed
+    for(int a=_a+1; a<=x; a += a&(-a)) {
+      for(int b=_b+1; b<=y; b += b&(-b)) {
         bit[a][b] += w;
       }
     }
   }
-  T sum(int _a, int _b){ //a,bは1-indexed
+  T sum(int _a, int _b){ //0-indexed
     T ret=0;
-    for(int a=_a; a>0; a -= a&(-a)) {
-      for(int b=_b; b>0; b -= b&(-b)) {
+    for(int a=_a+1; a>0; a -= a&(-a)) {
+      for(int b=_b+1; b>0; b -= b&(-b)) {
         ret += bit[a][b];
       }
     }
