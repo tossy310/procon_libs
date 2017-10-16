@@ -1,5 +1,15 @@
 // TODO SA-IS
 
+/*
+ sa[] SuffixArrayのi番目は，文字列sの何文字目から始まるか
+  ** sa[0] = s.length
+ lcp[] SuffixArray配列上のi番目とi+1番目の共通接頭文字列長
+  ** lcp[0] = 0
+ rank[] 文字列sのi番目の文字(0-indexed)は，sa上で何番目に配置されるか
+  ** rank[s.length] = 0
+ match(i,j) 文字列sのi文字目からのsuffixとj文字目からのsuffixの共通接頭文字列長
+*/
+
 class RMQ {
 public:
   int n;
@@ -38,7 +48,7 @@ public:
     }
     vector<int> tmp(n+1,0);
     for(int k=1; k<=n; k*=2){
-      auto comp = [&](int i, int j){
+      auto comp = [&](const int i, const int j){
         if(rank[i]!=rank[j]) return rank[i]<rank[j];
         int ri = (i+k<=n)?(rank[i+k]):-1;
         int rj = (j+k<=n)?(rank[j+k]):-1;
