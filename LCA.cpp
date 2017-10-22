@@ -2,18 +2,18 @@ vector<int> tree[100010];
 
 class LCA {
 public:
-  int n,ln; // number of nodes and log n
-  vector<vector<int> > parent;
+  int n, ln; // number of nodes and its log
+  vector<vector<int>> parent;
   vector<int> depth;
   LCA(int _n, int root=-1) : n(_n), depth(_n){
     ln=0;
-    while(n>(1<<ln)) ln++;  // calc log n
-    parent = vector<vector<int> >(ln, vector<int>(n));
+    while(n>=(1<<ln)) ln++;  // calc log n
+    parent = vector<vector<int>>(ln, vector<int>(n));
     if(root!=-1) init(root);
   }
   void dfs(int v, int p, int d){
-    parent[0][v]=p;
-    depth[v]=d;
+    parent[0][v] = p;
+    depth[v] = d;
     rep(i,tree[v].size()) if(tree[v][i]!=p) dfs(tree[v][i], v, d+1);
   }
   void init(int root){
