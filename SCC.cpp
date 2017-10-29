@@ -5,7 +5,6 @@ private:
   vector<vector<int>> &rG;
   vector<bool> used;
   vector<int> vs;
-  vector<int> cmp; // 頂点iが属するSCCのID
   int n;
   void dfs(int v){
     used[v] = true;
@@ -15,17 +14,23 @@ private:
   void rdfs(int v, int k){
     used[v] = true;
     cmp[v] = k;
+    group.back().pb(v);
     for(auto to : rG[v]) if(!used[to]) rdfs(to, k);
   }
 public:
+  vector<int> cmp; //頂点iが属するSCCのID
+  vector<vector<int>> group; // SCCのトポロジカル順i番目に属する頂点番号群
   int gc = 0; // group count
   SCC(vector<vector<int>> &g, vector<vector<int>> &r) : G(g), rG(r){
     n = G.size();
-    used = vector<bool>(n,false);
+    used = vector<bool>(n, false);
     cmp.resize(n);
     rep(i,n) if(!used[i]) dfs(i);
     fill(all(used), false);
-    for(int i = vs.size()-1; i>=0; i--) if(!used[vs[i]]) rdfs(vs[i], gc++);
+    for(int i=vs.size()-1; i>=0; i--) if(!used[vs[i]]){
+      group.pb(vector<int>());
+      rdfs(vs[i], gc++);
+    }
   }
   inline bool same(int i, int j){ return cmp[i]==cmp[j]; }
   inline int operator[](int i){ return cmp[i]; }
