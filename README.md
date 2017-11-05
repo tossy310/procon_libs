@@ -14,7 +14,5 @@ I usually use `tossy` as a my account ID.
 
 For geometory, I mainly refer to http://dai1741.github.io/maximum-algo-2012/docs/geometry/ .
 
-You can use my library freely, without permission.
-
 This library may contain mistakes or bugs!
-When you find it, I would appreciate it if you would contact me (or make an issue!)
+When you find it, I would appreciate it if you would contact me (or make an issue or a pull request)
