@@ -187,55 +187,58 @@ public:
 
 
 // Lazy Propagation Segment Tree (Range update, Range sum)
+// TODO we assume updated values should be non-negative, thus -1 is a sentinel.
+template<typename T>
 class SegTree {
 public:
   int n;
-  vector<long> data, sum; // data: 区間内の値，sum:区間内の実際の和
+  vector<T> lazy, val;
+  // lazy: uniform value for the range (not propageted), val: actual total sum value of the range
   inline void lazy_eval(int k, int l, int r){
-    if(data[k]>0){ // 最新の更新が下に伝搬していないとき
-      sum[k] = data[k]*(r-l);
-      if(k<n-1){
-        data[2*k+1]=data[k];
-        data[2*k+2]=data[k];
+    if(lazy[k]>=0){
+      val[k] = lazy[k]*(r-l);
+      if(k<n){
+        lazy[2*k] = lazy[k];
+        lazy[2*k+1] = lazy[k];
       }
-      data[k]=0;
+      lazy[k] = -1;
     }
   }
-  void _update(int a, int b, long v, int k, int l, int r){
+  void update(int a, int b, T v, int k, int l, int r){
     lazy_eval(k,l,r);
     if(r<=a || b<=l) return;
     if(a<=l && r<=b){
-      data[k] = v;
+      lazy[k] = v;
       lazy_eval(k,l,r);
       return;
     }
-    int m=(l+r)/2;
-    _update(a,b,v,k*2+1,l,m);
-    _update(a,b,v,k*2+2,m,r);
-    sum[k] = sum[k*2+1] + sum[k*2+2];
+    int m = (l+r)/2;
+    update(a,b,v,k*2,l,m);
+    update(a,b,v,k*2+1,m,r);
+    val[k] = val[k*2] + val[k*2+1];
     return;
   }
-  // [a,b) をvに更新
-  void update(int a, int b, long v){ _update(a,b,v,0,0,n); }
-
-  long _sum(int a, int b, int k, int l, int r){
+  inline void update(int a, int b, T v){ update(a,b,v,1,0,n); }
+  T sum(int a, int b, int k, int l, int r){
     lazy_eval(k,l,r);
     if(r<=a || b<=l) return 0;
-    if(a<=l && r<=b) return sum[k];
-    int m=(l+r)/2;
-    long vl = _sum(a,b,k*2+1,l,m);
-    long vr = _sum(a,b,k*2+2,m,r);
-    sum[k] = sum[k*2+1] + sum[k*2+2];
-    return vl+vr;
+    if(a<=l && r<=b) return val[k];
+    int m = (l+r)/2;
+    T vl = sum(a,b,k*2,l,m);
+    T vr = sum(a,b,k*2+1,m,r);
+    val[k] = val[k*2] + val[k*2+1];
+    return vl + vr;
   }
-  // [a,b) の合計
-  long query(int a,int b){ return _sum(a,b,0,0,n); }
-
+  inline T sum(int a,int b){ return sum(a,b,1,0,n); }
   SegTree(int n_){
     n=1;
     while(n<n_) n*=2;
-    data = vector<long>(2*n-1, 0);
-    sum = vector<long>(2*n-1, 0);
+    lazy = vector<T>(2*n, -1);
+    val = vector<T>(2*n, 0);
+  }
+  void init(vector<T> &v){
+    rep(i,v.size()) val[i+n] = v[i];
+    for(int i=n-1; i>0; i--) val[i] = val[i*2] + val[i*2+1];
   }
 };
 
