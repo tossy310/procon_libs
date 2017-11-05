@@ -41,14 +41,14 @@ long mod_pow(long x, long n, long p=MOD){
   }
   return res;
 }
-long mod_inv(long x, long p=MOD){ return mod_pow(x%p, p-2, p); }
+inline long mod_inv(long x, long p=MOD){ return mod_pow(x%p, p-2, p); }
 
 long fact(long n, long p=MOD){
   long ret=1;
   while(n>1) ret=ret*n%p, n--;
   return ret;
 }
-long comb(long n, long k, long p=MOD){ return fact(n,p)*mod_inv(fact(k,p),p)%p*mod_inv(fact(n-k,p),p)%p; }
+inline long comb(long n, long k, long p=MOD){ return fact(n,p)*mod_inv(fact(k,p),p)%p*mod_inv(fact(n-k,p),p)%p; }
 
 long comb[300][300];
 void init_comb(){
