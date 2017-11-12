@@ -72,6 +72,35 @@ long extgcd(long a, long b, long& x, long& y){
   return d;
 }
 
+// Non-recursive extgcd
+// a*x + b*y = gcd(a, b)
+inline long extgcd(long a, long b, long& x, long& y){
+  x = 1; y = 0;
+  long tx = 0, ty = 1;
+  while (b != 0){
+    long q = a/b, r = a%b;
+    long x2 = x - q*tx;
+    long y2 = y - q*ty;
+    a = b; b = r;
+    x = tx; tx = x2;
+    y = ty; ty = y2;
+  }
+  x = x; y = y;
+  return a;
+}
+
+// Chinese Remainder Theorem
+// u,v,mm are precomputable
+// gcd(m1, m2) == 1
+// compute x (mod m1*m2) : x = a mod m1, x = b mod m2
+inline long CRT(long a, long m1, long b, long m2){
+  long u, v;
+  extgcd(m1, m2, u, v);
+  long mm = m1*m2;
+  return ( (b*u %mm *m1 %mm) + (a*v %mm *m2 %mm) + mm) % mm;
+}
+
+
 // Euler's totient function
 // O(sqrt(n))
 long eulerPhi(long n) {
