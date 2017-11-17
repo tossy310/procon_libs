@@ -1,6 +1,8 @@
 class UnionFind {
 public:
-  vector<int> par, rank; // parent(negative := its root and abs-value is its size), depth
+  vector<int> par, rank;
+  // if par is negative, it is a root, of which tree size is the abs-value.
+  // rank represents depth
   UnionFind(int sz) : par(sz, -1), rank(sz, 0){}
   int find(int x){
     if(par[x]<0) return x;
