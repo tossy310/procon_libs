@@ -85,7 +85,6 @@ inline long extgcd(long a, long b, long& x, long& y){
     x = tx; tx = x2;
     y = ty; ty = y2;
   }
-  x = x; y = y;
   return a;
 }
 
