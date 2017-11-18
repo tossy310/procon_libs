@@ -1,3 +1,35 @@
+template<typename T>
+class SegTree {
+public:
+  int n;
+  T e;
+  T (*op)(T, T);
+  vector<T> data;
+  SegTree(int m, T _e, T (*_op)(T, T)) : e(_e), op(_op){
+    n=1;
+    while(n<m) n*=2;
+    data.resize(2*n, e);
+  }
+  T query(int l, int r){
+    T vl = e, vr = e;
+    for(l+=n, r+=n; l<r; l/=2, r/=2){
+      if(l&1) vl = op(vl, data[l++]);
+      if(r&1) vr = op(data[--r], vr);
+    }
+    return op(vl,vr);
+  }
+  void update(int k, T a){
+    k+=n;
+    data[k]=a;
+    while(k>0){
+      k = k/2;
+      data[k] = op(data[k*2], data[k*2+1]);
+    }
+  }
+  inline T operator[](int idx){ return data[idx+n]; }
+};
+
+
 // Segment Tree (range min, point update), INF注意
 template<typename T>
 class SegTree {
