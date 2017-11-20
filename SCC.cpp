@@ -1,4 +1,5 @@
 // Strongly Connected Components O(E + V)
+// 二重辺，自己ループはOKだが，使う際に全体が連結かどうか注意！
 class SCC {
 private:
   vector<vector<int>> &G;
@@ -14,12 +15,12 @@ private:
   void rdfs(int v, int k){
     used[v] = true;
     cmp[v] = k;
-    group.back().pb(v);
+    groups.back().pb(v);
     for(auto to : rG[v]) if(!used[to]) rdfs(to, k);
   }
 public:
   vector<int> cmp; //頂点iが属するSCCのID
-  vector<vector<int>> group; // SCCのトポロジカル順i番目に属する頂点番号群
+  vector<vector<int>> groups; // SCCのトポロジカル順i番目に属する頂点番号群
   int gc = 0; // group count
   SCC(vector<vector<int>> &g, vector<vector<int>> &r) : G(g), rG(r){
     n = G.size();
@@ -28,7 +29,7 @@ public:
     rep(i,n) if(!used[i]) dfs(i);
     fill(all(used), false);
     for(int i=vs.size()-1; i>=0; i--) if(!used[vs[i]]){
-      group.pb(vector<int>());
+      groups.pb(vector<int>());
       rdfs(vs[i], gc++);
     }
   }
