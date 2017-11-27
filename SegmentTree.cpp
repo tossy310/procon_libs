@@ -10,6 +10,14 @@ public:
     while(n<m) n*=2;
     data.resize(2*n, e);
   }
+  SegTree(const vector<T> &v, T _e, T (*_op)(T, T)) : e(_e), op(_op){
+    // not well verified yet
+    n=1;
+    while(n<v.size()) n*=2;
+    data.resize(2*n, e);
+    rep(i,v.size()) data[i+n] = v[i];
+    for(int i=n-1; i>0; i--) data[i] = op(data[i*2], data[i*2+1]);
+  }
   T query(int l, int r){
     T vl = e, vr = e;
     for(l+=n, r+=n; l<r; l/=2, r/=2){
@@ -177,6 +185,21 @@ public:
     segIdx.resize(2*n-1);
     rep(i,n-1,2*n-1) segIdx[i] = i;
     for(int i=n-2; i>=0; i--) segIdx[i] = segIdx[2*i+1];
+  }
+  SegTree(const vector<long> &v){
+    int n_ = v.size();
+    n=1;
+    while(n<n_) n*=2;
+    segMax.resize(2*n-1);
+    segAdd.resize(2*n-1, 0);
+    segIdx.resize(2*n-1);
+    rep(i,n_) segMax[n+i-1] = v[i];
+    for(int i=n-2; i>=0; i--) segMax[i] = max(segMax[2*i+1], segMax[2*i+2]);
+    rep(i,n-1,2*n-1) segIdx[i] = i;
+    for(int i=n-2; i>=0; i--){
+      if(segMax[2*i+1] > segMax[2*i+2]) segIdx[i] = 2*i+1;
+      else segIdx[i] = 2*i+2;
+    }
   }
   inline void add(int a, int b, T x){ _add(a,b,x,0,0,n);} // add x in [a,b)
   inline pair<T,int> getMax(int a,int b){return _max(a,b,0,0,n);} // <max-val, idx> idx はst.n-1を引いたほうがいいかも
