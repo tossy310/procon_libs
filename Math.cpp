@@ -90,7 +90,7 @@ inline long extgcd(long a, long b, long& x, long& y){
 
 // Chinese Remainder Theorem
 // u,v,mm are precomputable
-// gcd(m1, m2) == 1
+// require gcd(m1, m2) == 1
 // compute x (mod m1*m2) : x = a mod m1, x = b mod m2
 inline long CRT(long a, long m1, long b, long m2){
   long u, v;
