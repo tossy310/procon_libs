@@ -100,4 +100,5 @@ public:
     int x = rank[a], y = rank[b];
     return rmq.query(min(x,y), max(x,y));
   }
+  inline char operator[](int idx){ return s[idx]; }
 };
