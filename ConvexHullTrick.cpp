@@ -10,16 +10,19 @@ private:
   }
 public:
   ConvexHullTrick(){ }
-  // additions of 'a' shold be NON-INCREASING
+  // add line ax + b
+  // additions of 'a' shold be given in NON-INCREASING order
   void add(T a, T b){
-    auto p = mp(a,b);
+    auto p = make_pair(a, b);
     while(data.size()>=2 && !check(p)) data.pop_back();
     data.push_back(p);
   }
+  // get value of i-th data in deque with x
   inline T val(int i, T x) {
     return data[i].fi*x + data[i].se;
   }
-  // queries shold be NON-DECREASING
+  // get minimun value of query x
+  // queries shold be given in NON-DECREASING order
   T query(T x){
     while(data.size()>=2 && val(0, x) >= val(1, x)) data.pop_front();
     return val(0, x);
