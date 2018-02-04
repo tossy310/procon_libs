@@ -186,7 +186,7 @@ public:
     rep(i,n-1,2*n-1) segIdx[i] = i;
     for(int i=n-2; i>=0; i--) segIdx[i] = segIdx[2*i+1];
   }
-  SegTree(const vector<long> &v){
+  SegTree(const vector<T> &v){
     int n_ = v.size();
     n=1;
     while(n<n_) n*=2;
@@ -203,52 +203,6 @@ public:
   }
   inline void add(int a, int b, T x){ _add(a,b,x,0,0,n);} // add x in [a,b)
   inline pair<T,int> getMax(int a,int b){return _max(a,b,0,0,n);} // <max-val, idx> idx はst.n-1を引いたほうがいいかも
-};
-
-
-// Starry Sky Tree (Range Add, Range Max) non-recursive ver.
-template<typename T>
-class SegTree {
-public:
-  int n;
-  vector<T> segMax, segAdd;
-  inline void calc(int v){
-    int vl = 2*v, vr = 2*v+1;
-    segMax[v] = max(segMax[vl]+segAdd[vl], segMax[vr]+segAdd[vr]);
-  }
-  inline void apply(int v, T x){
-    segAdd[v] += x;
-  }
-  void add(int l, int r, T x){
-    bool cl = false, cr = false;
-    for(l+=n, r+=n; l<r; l/=2, r/=2){
-      if(cl) calc(l-1);
-      if(cr) calc(r);
-      if(l&1) apply(l++, x), cl = true;
-      if(r&1) apply(--r, x), cr = true;
-    }
-    for(--l; r>0; l/=2, r/=2){
-      if(cl) calc(l);
-      if(cr && (!cl || l != r)) calc(r);
-    }
-  }
-  inline void upd(T &val, int v){
-    val = max(val, segAdd[v] + segMax[v]);
-  }
-  T query(int l, int r){
-    T res = -INF;
-    for(l+=n, r+=n; l<r; l/=2, r/=2){
-      if(l&1) upd(res, l++);
-      if(r&1) upd(res, --r);
-    }
-    return res;
-  }
-  SegTree(int n_){
-    n=1;
-    while(n<n_) n*=2;
-    segMax.resize(2*n, 0);
-    segAdd.resize(2*n, 0);
-  }
 };
 
 
