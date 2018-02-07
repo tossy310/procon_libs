@@ -21,6 +21,45 @@ public:
 };
 
 
+template <class T>
+class WeightedUnionFind {
+  int n;
+  vector<int> par,sz;
+  vector<T> w;
+  // weight[i] : iがpar[i]よりどれだけ重いか
+public:
+  WeightedUnionFind(){}
+  WeightedUnionFind(int _n) : n(_n) {
+    par.resize(n, -1);
+    sz.resize(n, 1);
+    w.resize(n, 0);
+  }
+  int find(int i){
+    if(par[i] < 0) return i;
+    int p = find(par[i]);
+    w[i] += w[par[i]];
+    return par[i] = p;
+  }
+  T weight(int x){ find(x); return w[x]; }
+  bool same(int x, int y){ return find(x) == find(y); }
+  // weight[i] +w の位置に j を配置
+  void unite(int i, int j, T nw){
+    nw += weight(i) - weight(j);
+    int x = find(i), y = find(j);
+    if(x == y) return;
+    if(sz[x] < sz[y]){
+      swap(x, y);
+      nw = -nw;
+    }
+    sz[x] += sz[y];
+    par[y] = x;
+    w[y] = nw;
+  }
+  // x からみた y の相対位置
+  T diff(int x, int y){ return weight(y) - weight(x); }
+};
+
+
 class RewindableUnionFind {
 public:
   vector<int> par, rank;
