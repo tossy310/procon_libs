@@ -2,16 +2,13 @@ template<int mod=1000000007>
 class ModInt {
   int x;
 public:
-  ModInt() : x(0){}
+  ModInt() : x(0) {}
+  ModInt(const ModInt &y): x(y.x) {}
   ModInt(int64_t y){ x = y % mod; if(x < 0) x += mod; }
   ModInt &operator += (const ModInt &p){ x += p.x; if(x >= mod) x -= mod; return *this; }
   ModInt &operator -= (const ModInt &p){ x -= p.x; if(x < 0) x += mod; return *this; }
   ModInt &operator *= (const ModInt &p){ x = (int) (1LL * x * p.x % mod); return *this; }
   ModInt &operator /= (const ModInt &p){ *this *= p.inverse(); return *this; }
-  ModInt &operator += (const int64_t y){ x = (x + y)%mod; if(x < 0) x += mod; return *this; }
-  ModInt &operator -= (const int64_t y){ x = (x - y)%mod; if(x < 0) x += mod; return *this; }
-  ModInt &operator *= (const int64_t y){ x = (int) (x * y % mod); return *this; }
-  ModInt &operator /= (const int64_t y){ *this *= ModInt(y).inverse(); return *this; }
   ModInt operator -() const { return ModInt(-x); }
   ModInt operator + (const ModInt &p) const { return ModInt(*this) += p; }
   ModInt operator - (const ModInt &p) const { return ModInt(*this) -= p; }
@@ -19,12 +16,6 @@ public:
   ModInt operator / (const ModInt &p) const { return ModInt(*this) /= p; }
   bool operator == (const ModInt &p) const { return x == p.x; }
   bool operator != (const ModInt &p) const { return x != p.x; }
-  ModInt operator + (const int64_t y) const { return ModInt(*this) += y; }
-  ModInt operator - (const int64_t y) const { return ModInt(*this) -= y; }
-  ModInt operator * (const int64_t y) const { return ModInt(*this) *= y; }
-  ModInt operator / (const int64_t y) const { return ModInt(*this) /= y; }
-  bool operator == (const int64_t y) const { return x == (mod + y%mod)%mod; }
-  bool operator != (const int64_t y) const { return x != (mod + y%mod)%mod; }
   ModInt operator = (const int64_t y) { return *this = ModInt(y); }
   ModInt inverse() const {
     int a = x, b = mod, u = 1, v = 0, t;
