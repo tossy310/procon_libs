@@ -48,6 +48,33 @@ vector<double> gaussJordan(const vector<vector<double>> &A, const vector<double>
 }
 
 
+// Matrix 2*2 (require ModInt)
+struct mat {
+  Int a,b,c,d;
+  mat() : a(1), b(0), c(0), d(1) {}
+  mat(Int a0, Int a1, Int a2, Int a3) : a(a0), b(a1), c(a2), d(a3) {}
+  mat &operator *= (const mat &p){
+    Int aa = a*p.a + b*p.c;
+    Int bb = a*p.b + b*p.d;
+    Int cc = c*p.a + d*p.c;
+    Int dd = c*p.b + d*p.d;
+    a = aa; b = bb; c = cc; d = dd;
+    return *this;
+  }
+  mat operator * (const mat &p) const {
+    return mat(*this) *= p;
+  }
+  mat inverse() const {
+    Int id = (a*d - b*c).inverse();
+    return mat(id*d, -id*b, -id*c, id*a);
+  }
+  friend ostream &operator << (ostream &os, const mat &p) {
+    os << p.a << " " << p.b << " " << p.c << " " << p.d;
+    return os;
+  }
+};
+
+
 // for POJ
 #define MAT_N 101
 long mat[MAT_N][MAT_N];
