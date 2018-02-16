@@ -3,14 +3,14 @@ class SegTree {
 public:
   int n;
   T e;
-  T (*op)(T, T);
+  T (*op)(const T&, const T&);
   vector<T> data;
-  SegTree(int m, T _e, T (*_op)(T, T)) : e(_e), op(_op){
+  SegTree(int m, T _e, T (*_op)(const T&, const T&)) : e(_e), op(_op){
     n=1;
     while(n<m) n*=2;
     data.resize(2*n, e);
   }
-  SegTree(const vector<T> &v, T _e, T (*_op)(T, T)) : e(_e), op(_op){
+  SegTree(const vector<T> &v, T _e, T (*_op)(const T&, const T&)) : e(_e), op(_op){
     // not well verified yet
     n=1;
     while(n<v.size()) n*=2;
@@ -18,7 +18,7 @@ public:
     rep(i,v.size()) data[i+n] = v[i];
     for(int i=n-1; i>0; i--) data[i] = op(data[i*2], data[i*2+1]);
   }
-  T query(int l, int r){
+  T query(int l, int r) const {
     T vl = e, vr = e;
     for(l+=n, r+=n; l<r; l/=2, r/=2){
       if(l&1) vl = op(vl, data[l++]);
@@ -34,7 +34,7 @@ public:
       data[k] = op(data[k*2], data[k*2+1]);
     }
   }
-  inline T operator[](int idx){ return data[idx+n]; }
+  inline T operator[](int idx) const { return data[idx+n]; }
 };
 
 

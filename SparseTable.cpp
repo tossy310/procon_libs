@@ -4,8 +4,8 @@ public:
   vector<T> tbl[20];
   vector<T> tbr[20];
   int n;
-  T (*op)(T, T);
-  SparseTable(const vector<T> &v, T (*_op)(T, T)) : op(_op){
+  T (*op)(const T&, const T&);
+  SparseTable(const vector<T> &v, T (*_op)(const T&, const T&)) : op(_op){
     // build table O(NlogN)
     n = v.size();
     tbl[0].resize(n+1);
@@ -24,7 +24,7 @@ public:
       }
     }
   }
-  T query(int l, int r){ // [l,r)
+  T query(int l, int r) const { // [l,r)
     if(l+1 == r) return tbl[0][l];
     r--; // [l,r]
     int k = 31 - __builtin_clz(l^r); // 2^k <= l^r < 2^{k+1}
