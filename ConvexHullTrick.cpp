@@ -3,7 +3,7 @@ template<typename T, typename U=__int128>
 class ConvexHullTrick {
 private:
   deque<pair<T,T>> data;
-  bool check(const pair<T,T> &p3){
+  bool check(const pair<T,T> &p3) const {
     auto &p1 = data[data.size()-2];
     auto &p2 = data[data.size()-1];
     return (U)(p2.fi-p1.fi)*(p3.se-p2.se) < (U)(p2.se-p1.se)*(p3.fi-p2.fi);
@@ -18,7 +18,7 @@ public:
     data.push_back(p);
   }
   // get value of i-th data in deque with x
-  inline T val(int i, T x) {
+  inline T val(int i, T x) const {
     return data[i].fi*x + data[i].se;
   }
   // get minimun value of query x
@@ -31,6 +31,18 @@ public:
     return data.empty();
   }
 };
+
+// no constraint for x (use vector instead of deque, deque is too slow!!)
+T query(T x) const {
+  int sz = data.size();
+  int l = 0, r = sz;
+  while(r-l>1){
+    int m = (l+r)/2;
+    if(val(m, x) - val(m-1, x) < 0) l = m;
+    else r = m;
+  }
+  return val(l, x);
+}
 
 // TODO dynamic convex hull Trick
 // cf. https://github.com/niklasb/contest-algos/blob/master/convex_hull/dynamic.cpp
