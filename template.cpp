@@ -16,7 +16,6 @@ template<class H,class... T> void _dbg(string s,H h,T... t){int l=s.find(',');ce
 template<class T,class U> ostream& operator<<(ostream &o, const pair<T,U> &p){o<<"("<<p.fi<<","<<p.se<<")";return o;}
 template<class T> ostream& operator<<(ostream &o, const vector<T> &v){o<<"[";for(T t:v){o<<t<<",";}o<<"]";return o;}
 
-#define INF 1120000000
 #define long long long // for codeforces
 
 int main(){
