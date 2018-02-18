@@ -48,27 +48,44 @@ vector<double> gaussJordan(const vector<vector<double>> &A, const vector<double>
 }
 
 
-// Matrix 2*2 (require ModInt)
-struct mat {
-  Int a,b,c,d;
-  mat() : a(1), b(0), c(0), d(1) {}
-  mat(Int a0, Int a1, Int a2, Int a3) : a(a0), b(a1), c(a2), d(a3) {}
-  mat &operator *= (const mat &p){
-    Int aa = a*p.a + b*p.c;
-    Int bb = a*p.b + b*p.d;
-    Int cc = c*p.a + d*p.c;
-    Int dd = c*p.b + d*p.d;
+// Matrix 2*2 NOT WELL VERIFIED!!
+// division(inverse) can cause error when det == 0
+// TODO generalize to N*M matrix
+template<typename T>
+struct mat22 {
+  T a,b,c,d;
+  mat22() : a(1), b(0), c(0), d(1) {}
+  mat22(T a0, T a1, T a2, T a3) : a(a0), b(a1), c(a2), d(a3) {}
+  mat22 &operator += (const mat22 &p){
+    a += p.a; b += p.b; c += p.c; d += p.d; return *this;
+  }
+  mat22 &operator -= (const mat22 &p){
+    a -= p.a; b -= p.b; c -= p.c; d -= p.d; return *this;
+  }
+  mat22 &operator *= (const mat22 &p){
+    T aa = a*p.a + b*p.c;
+    T bb = a*p.b + b*p.d;
+    T cc = c*p.a + d*p.c;
+    T dd = c*p.b + d*p.d;
     a = aa; b = bb; c = cc; d = dd;
     return *this;
   }
-  mat operator * (const mat &p) const {
-    return mat(*this) *= p;
+  mat22 &operator /= (const mat22 &p){
+    *this *= p.inverse();
+    return *this;
   }
-  mat inverse() const {
-    Int id = (a*d - b*c).inverse();
-    return mat(id*d, -id*b, -id*c, id*a);
+  mat22 operator + (const mat22 &p) const { return mat(*this) += p; }
+  mat22 operator - (const mat22 &p) const { return mat(*this) -= p; }
+  mat22 operator * (const mat22 &p) const { return mat(*this) *= p; }
+  mat22 operator / (const mat22 &p) const { return mat(*this) /= p; }
+  T det() const {
+    return a*d - b*c;
   }
-  friend ostream &operator << (ostream &os, const mat &p) {
+  mat22 inverse() const {
+    T dd = (T)1/det();
+    return mat22(dd*d, -dd*b, -dd*c, dd*a);
+  }
+  friend ostream &operator << (ostream &os, const mat22 &p) {
     os << p.a << " " << p.b << " " << p.c << " " << p.d;
     return os;
   }
