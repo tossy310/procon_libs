@@ -1,5 +1,67 @@
-// vector<int> tree[100005];
-// の形の木・森に対して同型判定のときに使うコード．
+// 重心列挙 O(n) verified AGC018-D
+// see http://www.learning-algorithms.com/entry/2018/01/03/215559
+// TODO 再帰除去
+vector<int> centroid(int n, vector<int> *vec) {
+  vector<int> centroid;
+  vector<int> sz(n);
+  function<void(int,int)> dfs = [&](int v, int prev){
+    sz[v] = 1;
+    bool is_centroid = true;
+    for(auto to : g[v]) if(to != prev){
+      dfs(to, v);
+      sz[v] += sz[to];
+      if(sz[to] > n/2) is_centroid = false;
+    }
+    if(n - sz[v] > n/2) is_centroid = false;
+    if(is_centroid) centroid.push_back(v);
+  };
+  dfs(0, -1);
+  return centroid;
+}
+
+
+// 木の直径パス (unweighted)
+// verify for weighted: AOJ GRL 5A
+vector<int> diameter(int n, vector<int> *vec){
+  if(n==1) return {0};
+  vector<int> dist(n);
+  vector<int> pre(n);
+  auto bfs = [&](int ini){
+    queue<pair<int,int>> q;
+    q.push({ini,-1});
+    dist[ini] = 0;
+    int farthest = ini;
+    while(q.size()){
+      auto p = q.front(); q.pop();
+      int v = p.first;
+      int from = p.second;
+      if(dist[farthest] < dist[v]){
+        farthest = v;
+      }
+      for(auto to : vec[v]) if(to!=from){
+        q.push({to, v});
+        dist[to] = dist[v] + 1;
+        pre[to] = v;
+      }
+    }
+    return farthest;
+  };
+  int p = bfs(0);
+  int q = bfs(p);
+  int cur = q;
+  vector<int> res;
+  res.push_back(cur);
+  while(cur != p){
+    cur = pre[cur];
+    res.push_back(cur);
+  }
+  assert(res[0]==q && res.back()==p);
+  return res;
+}
+
+
+
+// 木・森に対する同型判定．
 // 根つき木のときはcenterのかわりに根を設定する．
 
 map<vector<int>,int> conv;
@@ -8,6 +70,7 @@ int val[300005];
 bool checked[300005];
 
 // vec上でvを含む木の中心
+// TODO use diameter
 vector<int> center(int v, vector<int> *vec){
   auto bfs = [&](int d){
     queue<pair<int,int>> q;
