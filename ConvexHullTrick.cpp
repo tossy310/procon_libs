@@ -44,5 +44,44 @@ T query(T x) const {
   return val(l, x);
 }
 
-// TODO dynamic convex hull Trick
-// cf. https://github.com/niklasb/contest-algos/blob/master/convex_hull/dynamic.cpp
+
+
+// Dynamic Convex Hull Trick
+// TODO understand and verify
+// from https://github.com/niklasb/contest-algos/blob/master/convex_hull/dynamic.cpp
+const long is_query = -(1LL<<62);
+struct CHTLine {
+  long m, b;
+  mutable function<const CHTLine*()> succ;
+  bool operator<(const CHTLine& rhs) const {
+    if(rhs.b != is_query) return m < rhs.m;
+    const CHTLine* s = succ();
+    if(!s) return 0;
+    long x = rhs.m;
+    return b - s->b < (s->m - m) * x;
+  }
+};
+struct DynamicCHT : public multiset<CHTLine> {
+  // will maintain upper hull for maximum
+  bool bad(iterator y){
+    auto z = next(y);
+    if(y == begin()) {
+      if(z == end()) return false;
+      return y->m == z->m && y->b <= z->b;
+    }
+    auto x = prev(y);
+    if(z == end()) return y->m == x->m && y->b <= x->b;
+    return (x->b - y->b)*(z->m - y->m) >= (y->b - z->b)*(y->m - x->m);
+  }
+  void insert_line(long m, long b){
+    auto y = insert({m, b});
+    y->succ = [=] { return next(y) == end() ? 0 : &*next(y); };
+    if(bad(y)){ erase(y); return; }
+    while(next(y) != end() && bad(next(y))) erase(next(y));
+    while(y != begin() && bad(prev(y))) erase(prev(y));
+  }
+  long eval(long x){
+    auto l = *lower_bound((CHTLine){x, is_query});
+    return l.m * x + l.b;
+  }
+};
