@@ -11,9 +11,8 @@ public:
     data.resize(2*n, e);
   }
   SegTree(const vector<T> &v, T _e, T (*_op)(const T&, const T&)) : e(_e), op(_op){
-    // not well verified yet
     n=1;
-    while(n<v.size()) n*=2;
+    while(n<(int)v.size()) n*=2;
     data.resize(2*n, e);
     rep(i,v.size()) data[i+n] = v[i];
     for(int i=n-1; i>0; i--) data[i] = op(data[i*2], data[i*2+1]);
