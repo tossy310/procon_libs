@@ -1,5 +1,6 @@
-using Point = complex<double>;
-const double EPS = 1e-8;
+using Double = double;
+using Point = complex<Double>;
+const Double EPS = 1e-8;
 #define X real()
 #define Y imag()
 #define LE(n,m) ((n) < (m) + EPS)
@@ -12,86 +13,87 @@ namespace std {
 }
 
 // 内積 dot(a,b) = |a||b|cosθ
-double dot(Point a, Point b){ return a.X*b.X + a.Y*b.Y; }
+Double dot(const Point &a, const Point &b){ return a.X*b.X + a.Y*b.Y; }
 // 外積 cross(a,b) = |a||b|sinθ
-double cross(Point a, Point b){ return a.X*b.Y - a.Y*b.X; }
+Double cross(const Point &a, const Point &b){ return a.X*b.Y - a.Y*b.X; }
 
 // AB からみて AC がどの方向にあるか
-int ccw(Point a, Point b, Point c){
-  b -= a;  c -= a;
-  if(cross(b,c) >  EPS) return +1;  // ccw
-  if(cross(b,c) < -EPS) return -1;  // cw
-  if(dot(b,c)   < -EPS) return +2;  // c--a--b on line
-  if(norm(b) < norm(c)) return -2;  // a--b--c on line or a==b
-  return 0;                          // a--c--b on line or a==c or b==c
+int ccw(const Point &a, const Point &b, const Point &c){
+  const Point db = b - a;
+  const Point dc = c - a;
+  if(cross(db,dc) >  EPS) return +1;  // ccw
+  if(cross(db,dc) < -EPS) return -1;  // cw
+  if(dot(db,dc)   < -EPS) return +2;  // c--a--b on line
+  if(norm(db) < norm(dc)) return -2;  // a--b--c on line or a==b
+  return 0;                           // a--c--b on line or a==c or b==c
 }
 
 // 交差判定
-bool isecLP(Point a1, Point a2, Point b){
+bool isecLP(const Point &a1, const Point &a2, const Point &b){
   return abs(ccw(a1, a2, b)) != 1;  // return EQ(cross(a2-a1, b-a1), 0);
 }
-bool isecLL(Point a1, Point a2, Point b1, Point b2){
+bool isecLL(const Point &a1, const Point &a2, const Point &b1, const Point &b2){
   return !isecLP(a2-a1, b2-b1, 0) || isecLP(a1, b1, b2);
 }
-bool isecLS(Point a1, Point a2, Point b1, Point b2) {
+bool isecLS(const Point &a1, const Point &a2, const Point %b1, const Point &b2){
   return cross(a2-a1, b1-a1) * cross(a2-a1, b2-a1) < EPS;
 }
-bool isecSP(Point a1, Point a2, Point b){
+bool isecSP(const Point &a1, const Point &a2, const Point &b){
   return !ccw(a1, a2, b);
 }
-bool isecSS(Point a1, Point a2, Point b1, Point b2){
+bool isecSS(const Point &a1, const Point &a2, const Point &b1, const Point &b2){
   return ccw(a1, a2, b1)*ccw(a1, a2, b2) <= 0 && ccw(b1, b2, a1)*ccw(b1, b2, a2) <= 0;
 }
 
 
 // 点pの直線a1-a2への射影点
-Point proj(Point a1, Point a2, Point p){
+Point proj(const Point &a1, const Point &a2, const Point &p){
   return a1 + dot(a2-a1, p-a1)/norm(a2-a1) * (a2-a1);
 }
 
 // 距離
-double distLP(Point a1, Point a2, Point p){
+Double distLP(const Point &a1, const Point &a2, const Point &p){
   return abs(proj(a1, a2, p) - p);
 }
-double distLL(Point a1, Point a2, Point b1, Point b2){
+Double distLL(const Point &a1, const Point &a2, const Point &b1, const Point &b2){
   return isecLL(a1, a2, b1, b2) ? 0 : distLP(a1, a2, b1);
 }
-double distLS(Point a1, Point a2, Point b1, Point b2){
+Double distLS(const Point &a1, const Point &a2, const Point &b1, const Point &b2){
   return isecLS(a1, a2, b1, b2) ? 0 : min(distLP(a1, a2, b1), distLP(a1, a2, b2));
 }
-double distSP(Point a1, Point a2, Point p){
+Double distSP(const Point &a1, const Point &a2, const Point &p){
   Point r = proj(a1, a2, p);
   if(isecSP(a1, a2, r)) return abs(r-p);
   return min(abs(a1-p), abs(a2-p));
 }
-double distSS(Point a1, Point a2, Point b1, Point b2){
+Double distSS(const Point &a1, const Point &a2, const Point &b1, const Point &b2){
   if(isecSS(a1, a2, b1, b2)) return 0;
   return min(min(distSP(a1, a2, b1), distSP(a1, a2, b2)), min(distSP(b1, b2, a1), distSP(b1, b2, a2)));
 }
-double distLC(Point a1, Point a2, Point c, double r){
+Double distLC(const Point &a1, const Point &a2, const Point &c, const Double r){
   return max(distLP(a1, a2, c) - r, 0.0);
 }
-double distSC(Point a1, Point a2, Point c, double r){ // not verified
-  double dSqr1 = norm(c-a1), dSqr2 = norm(c-a2);
+Double distSC(const Point &a1, const Point &a2, const Point &c, const Double r){ // not verified
+  Double dSqr1 = norm(c-a1), dSqr2 = norm(c-a2);
   bool b1 = dSqr1 < r*r, b2 = dSqr2 < r*r;
   if(b1 ^ b2) return 0; // 交差
   if(b1 & b2) return r - sqrt(max(dSqr1, dSqr2)); // 内包. 場合により0
   return max(distSP(a1, a2, c) - r, 0.0);
 }
-double distCC(Point a, double ar, Point b, double br){
-  double d = abs(a-b);
+Double distCC(const Point &a, const Double ar, const Point &b, const Double br){
+  Double d = abs(a-b);
   return GE(d, abs(ar-br)) ? max(d-ar-br, 0.0) : abs(ar-br) - d;
 }
 
 // 交点
-Point crosspointLL(Point a1, Point a2, Point b1, Point b2){
-  double d1 = cross(b2-b1, b1-a1);
-  double d2 = cross(b2-b1, a2-a1);
+Point crosspointLL(const Point &a1, const Point &a2, const Point &b1, const Point &b2){
+  Double d1 = cross(b2-b1, b1-a1);
+  Double d2 = cross(b2-b1, a2-a1);
   if(EQ(d1, 0) && EQ(d2, 0)) return a1;  // same line
   assert(!EQ(d2, 0));
   return a1 + d1/d2 * (a2-a1);
 }
-vector<Point> crosspointLC(Point a1, Point a2, Point c, double r){ // not verified
+vector<Point> crosspointLC(const Point &a1, const Point &a2, const Point &c, const Double r){ // not verified
   vector<Point> ps;
   Point ft = proj(a1, a2, c);
   if(!GE(r*r, norm(ft-c))) return ps;
@@ -100,11 +102,11 @@ vector<Point> crosspointLC(Point a1, Point a2, Point c, double r){ // not verifi
   if(!EQ(r*r, norm(ft-c))) ps.pb(ft - dir);
   return ps;
 }
-vector<Point> crosspointCC(Point a, double ar, Point b, double br){ // not verified
+vector<Point> crosspointCC(const Point &a, const Double ar, const Point &b, const Double br){ // not verified
   vector<Point> ps;
   Point ab = b-a;
-  double d = abs(ab);
-  double crL = (norm(ab) + ar*ar - br*br) / (2*d);
+  Double d = abs(ab);
+  Double crL = (norm(ab) + ar*ar - br*br) / (2*d);
   if(EQ(d, 0) || ar < abs(crL)) return ps;
   Point abN = ab * Point(0, sqrt(ar*ar - crL*crL) / d);
   Point cp = a + crL/d * ab;
@@ -134,7 +136,7 @@ vector<Point> GrahamScan(vector<Point> points){
 
 // 凸包の内部判定 O(n)
 // 領域内部なら1、境界上なら2、外部なら0
-int inConvex(Point p, const vector<Point>& conv){
+int inConvex(const Point &p, const vector<Point>& conv){
   int n = conv.size();
   int dir = ccw(conv[0], conv[1], p);
   rep(i,n){
@@ -145,9 +147,9 @@ int inConvex(Point p, const vector<Point>& conv){
   return 1;
 }
 
-// 凸多角形の内部判定 O(logn)
+// 凸包の内部判定 O(logn)
 // 領域内部なら1、境界上なら2、外部なら0
-int inConvex(Point p, const vector<Point>& conv){
+int inConvex(const Point &p, const vector<Point>& conv){
   int n = conv.size();
   Point g = (conv[0] + conv[n/3] + conv[n*2/3])/3.0;
   if (g == p) return 1;
@@ -168,14 +170,14 @@ int inConvex(Point p, const vector<Point>& conv){
     }
   }
   r %= n;
-  double cr = cross(conv[l] - p, conv[r] - p);
+  Double cr = cross(conv[l] - p, conv[r] - p);
   return EQ(cr, 0) ? 2 : cr < 0 ? 0 : 1;
 }
 
 
 // キャリパー法 最遠点対探索，最遠距離を返す
 // 入力は凸包となっていること．
-double caliper(vector<Point> conv){
+Double caliper(const vector<Point> &conv){
   int n = conv.size();
   if(n==2) return abs(conv[0] - conv[1]);
   int i=0, j=0;
@@ -184,7 +186,7 @@ double caliper(vector<Point> conv){
     if(conv[k].x > conv[j].x) j=k;
   }
   // iが左端，jが右端
-  double res = abs(conv[i] - conv[j]);
+  Double res = abs(conv[i] - conv[j]);
   int si=i, sj=j;
   while(si != j || sj != i){
     if( cross(conv[(i+1)%n]-conv[i], conv[(j+1)%n]-conv[j]) < 0 ) i = (i+1)%n;
