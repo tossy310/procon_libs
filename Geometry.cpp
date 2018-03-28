@@ -197,6 +197,20 @@ Double caliper(const vector<Point> &conv){
 }
 
 
+// 点aと点bを通り、半径がrの円の中心を返す
+vector<Point> circlesPointsRadius(const Point &a, const Point &b, const Ddouble r){
+  vector<Point> cs;
+  Ppoint abH = (b-a)*0.5;
+  Double d = abs(abH);
+  if(d == 0 || d > r) return cs;  // a==b  or  abs(a-b) > 2r
+  Double dN = sqrt(r*r - d*d);
+  Point n = abH * P(0,1) * (dN / d);
+  cs.push_back(a + abH + n);
+  if(dN > 0) cs.push_back(a + abH - n);
+  return cs;
+}
+
+
 // ConvexHull with Vertex addition
 // O((N+Q)logN)
 class AddableConvexHull {
@@ -355,18 +369,6 @@ P circumcenter(P a, P b, P c) {
   return c + crosspointLL(a, a*P(1,1), b, b*P(1,1));
 }
 
-// 点aと点bを通り、半径がrの円の中心を返す
-VP circlesPointsRadius(P a, P b, D r) {
-  VP cs;
-  P abH = (b-a)*0.5;
-  D d = abs(abH);
-  if (d == 0 || d > r) return cs;  // 必要なら !LE(d,r) として円1つになる側へ丸める
-  D dN = sqrt(r*r - d*d);          // 必要なら max(r*r - d*d, 0) とする
-  P n = abH * P(0,1) * (dN / d);
-  cs.push_back(a + abH + n);
-  if (dN > 0) cs.push_back(a + abH - n);
-  return cs;
-}
 
 // 点aと点bを通り、直線lに接する円の中心
 VP circlesPointsTangent(P a, P b, P l1, P l2) {
