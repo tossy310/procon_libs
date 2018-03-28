@@ -23,7 +23,7 @@ public:
     rep(i,m) data[i+n] = lcp[i];
     for(int i=n-1; i>0; i--) data[i] = min(data[2*i], data[2*i+1]);
   }
-  inline int query(int l, int r){
+  inline int query(int l, int r) const {
     int ret = INF;
     for(l+=n, r+=n; l<r; l/=2, r/=2){
       if(l&1) ret = min(ret, data[l++]);
@@ -35,7 +35,7 @@ public:
 
 class SuffixArray {
 public:
-  string &s;
+  const string &s;
   vector<int> sa, lcp, rank;
   int n;
   RMQ rmq;
@@ -80,13 +80,13 @@ public:
   void construct_rmq(){
     rmq = RMQ(lcp);
   }
-  SuffixArray(string &str) : s(str){
+  SuffixArray(const string &str) : s(str){
     n = s.size();
     construct_sa();
     construct_lcp();
     construct_rmq();
   }
-  bool contain(const string &t){
+  bool contain(const string &t) const {
     int m = t.size();
     int l = 0, r = n;
     while(r-l>1){
@@ -96,9 +96,19 @@ public:
     }
     return s.compare(sa[r], m, t) == 0;
   }
-  inline int match(int a, int b){
+  int lower_bound(const string &t) const {
+    int m = t.size();
+    int l = 0, r = n+1;
+    while(r-l>1){
+      int mid = (r+l)/2;
+      if(s.compare(sa[mid], m, t) < 0) l = mid;
+      else r = mid;
+    }
+    return r; // return rank
+  }
+  inline int match(int a, int b) const {
     int x = rank[a], y = rank[b];
     return rmq.query(min(x,y), max(x,y));
   }
-  inline char operator[](int idx){ return s[idx]; }
+  inline char operator[](int idx) const { return s[idx]; }
 };
