@@ -130,7 +130,7 @@ public:
       if(r&1) data[--r] += v;
     }
   }
-  T get(int k){
+  T get(int k) const {
     k += n;
     T ret = data[k];
     while(k>0){
@@ -139,6 +139,47 @@ public:
     }
     return ret;
   }
+};
+
+
+// Starry Sky Stree (Range Add, Range Min)
+template<typename T>
+class SegTree {
+private:
+  int n;
+  vector<T> segMin, segAdd;
+  void _add(int a, int b, T x, int k, int l, int r){
+    if(r<=a || b<=l) return;
+    if(a<=l && r<=b){ segAdd[k]+=x; return; }
+    int cl = k*2+1, cr = k*2+2;
+    _add(a,b,x,cl,l,(l+r)/2);
+    _add(a,b,x,cr,(l+r)/2,r);
+    segMin[k] = min(segMin[cl]+segAdd[cl], segMin[cr]+segAdd[cr]);
+  }
+  T _min(int a, int b, int k, int l, int r) const {
+    if(r<=a || b<=l) return INF;
+    if(a<=l && r<=b) return segMin[k]+segAdd[k];
+    return min(_min(a,b,k*2+1,l,(l+r)/2), _min(a,b,k*2+2,(l+r)/2,r)) + segAdd[k];
+  }
+public:
+  SegTree(){}
+  SegTree(int n_){
+    n=1;
+    while(n<n_) n*=2;
+    segMin.resize(2*n-1, 0);
+    segAdd.resize(2*n-1, 0);
+  }
+  SegTree(const vector<T> &v){
+    int n_ = v.size();
+    n=1;
+    while(n<n_) n*=2;
+    segMin.resize(2*n-1);
+    segAdd.resize(2*n-1, 0);
+    rep(i,n_) segMin[n+i-1] = v[i];
+    for(int i=n-2; i>=0; i--) segMin[i] = min(segMin[2*i+1], segMin[2*i+2]);
+  }
+  inline void add(int a, int b, T x){ _add(a,b,x,0,0,n); } // add x in [a,b)
+  inline T getMin(int a, int b) const { return _min(a,b,0,0,n); } // range min in [a,b)
 };
 
 
@@ -152,7 +193,7 @@ public:
   vector<int> segIdx;
   void _add(int a, int b, T x, int k, int l, int r){
     if(r<=a || b<=l) return;
-    if(a<=l && r<=b){segAdd[k]+=x; return;}
+    if(a<=l && r<=b){ segAdd[k]+=x; return; }
     int cl = k*2+1, cr = k*2+2;
     _add(a,b,x,cl,l,(l+r)/2);
     _add(a,b,x,cr,(l+r)/2,r);
@@ -166,7 +207,7 @@ public:
       segIdx[k] = segIdx[cr];
     }
   }
-  pair<T, int> _max(int a, int b, int k, int l, int r){ // <val, idx> (tree上でのidx)
+  pair<T, int> _max(int a, int b, int k, int l, int r) const { // <val, idx> (tree上でのidx)
     if(r<=a || b<=l) return mp(-INF, -100);
     if(a<=l && r<=b) return mp(segMax[k]+segAdd[k], segIdx[k]);
     pair<T,int> vl = _max(a,b,k*2+1,l,(l+r)/2);
@@ -177,10 +218,8 @@ public:
   SegTree(int n_){
     n=1;
     while(n<n_) n*=2;
-    segMax.resize(2*n-1);
-    fill(all(segMax), 0);
-    segAdd.resize(2*n-1);
-    fill(all(segAdd), 0);
+    segMax.resize(2*n-1, 0);
+    segAdd.resize(2*n-1, 0);
     segIdx.resize(2*n-1);
     rep(i,n-1,2*n-1) segIdx[i] = i;
     for(int i=n-2; i>=0; i--) segIdx[i] = segIdx[2*i+1];
@@ -201,7 +240,7 @@ public:
     }
   }
   inline void add(int a, int b, T x){ _add(a,b,x,0,0,n);} // add x in [a,b)
-  inline pair<T,int> getMax(int a,int b){return _max(a,b,0,0,n);} // <max-val, idx> idx はst.n-1を引いたほうがいいかも
+  inline pair<T,int> getMax(int a, int b) const {return _max(a,b,0,0,n);} // <max-val, idx> idx はst.n-1を引いたほうがいいかも
 };
 
 
