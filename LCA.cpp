@@ -11,12 +11,12 @@ public:
     parent = vector<vector<int>>(ln, vector<int>(n));
     if(root!=-1) init(root);
   }
-  void dfs(int v, int p, int d){
+  void dfs(const int v, const int p, const int d){
     parent[0][v] = p;
     depth[v] = d;
-    rep(i,tree[v].size()) if(tree[v][i]!=p) dfs(tree[v][i], v, d+1);
+    for(auto to : tree[v]) if(to != p) dfs(to, v, d+1);
   }
-  void init(int root){
+  void init(const int root){
     dfs(root, -1, 0);
     for(int k=0; k+1<ln; k++){
       for(int v=0; v<n; v++){
@@ -25,7 +25,7 @@ public:
       }
     }
   }
-  int query(int u, int v){
+  int query(int u, int v) const {
     if(depth[u] > depth[v]) swap(u,v);
     for(int k=0; k<ln; k++){
       if((depth[v]-depth[u])>>k & 1) v = parent[k][v];
