@@ -31,18 +31,18 @@ public:
       priority_queue<P, vector<P>, greater<P>> pq;
       fill(all(d), INF);
       d[s] = 0;
-      pq.push(mp(0,s));
+      pq.push(make_pair(0,s));
       while(!pq.empty()){
         auto p = pq.top(); pq.pop();
-        int v = p.se;
-        if(d[v] < p.fi) continue;
+        int v = p.second;
+        if(d[v] < p.first) continue;
         rep(i,Graph[v].size()){
           edge &e = Graph[v][i];
           if(e.cap > 0 && d[e.to] > d[v] + e.cost + h[v] - h[e.to]){
             d[e.to] = d[v] + e.cost + h[v] - h[e.to];
             prevv[e.to] = v;
             preve[e.to] = i;
-            pq.push(mp(d[e.to], e.to));
+            pq.push(make_pair(d[e.to], e.to));
           }
         }
       }

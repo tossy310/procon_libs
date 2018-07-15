@@ -6,7 +6,7 @@ private:
   bool check(const pair<T,T> &p3) const {
     auto &p1 = data[data.size()-2];
     auto &p2 = data[data.size()-1];
-    return (U)(p2.fi-p1.fi)*(p3.se-p2.se) < (U)(p2.se-p1.se)*(p3.fi-p2.fi);
+    return (U)(p2.first-p1.first)*(p3.second-p2.second) < (U)(p2.second-p1.second)*(p3.first-p2.first);
   }
 public:
   ConvexHullTrick(){ }
@@ -19,7 +19,7 @@ public:
   }
   // get value of i-th data in deque with x
   inline T val(int i, T x) const {
-    return data[i].fi*x + data[i].se;
+    return data[i].first*x + data[i].second;
   }
   // get minimun value of query x
   // queries shold be given in NON-DECREASING order
@@ -47,7 +47,7 @@ T query(T x) const {
 
 
 // Dynamic Convex Hull Trick
-// TODO understand and verify
+// TODO verify
 // from https://github.com/niklasb/contest-algos/blob/master/convex_hull/dynamic.cpp
 const long is_query = -(1LL<<62);
 struct CHTLine {
