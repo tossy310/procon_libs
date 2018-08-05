@@ -6,7 +6,7 @@ private:
   vector<vector<edge> > Graph;
   vector<int> level, iter; //sからの距離,どこまで調べたか
   void bfs(int s){
-    fill(all(level), -1);
+    fill(begin(level), end(level), -1);
     queue<int> q;
     level[s]=0;
     q.push(s);
@@ -46,9 +46,9 @@ public:
     while(true){
       bfs(s);
       if(level[t] < 0) break;
-      fill(all(iter), 0);
+      fill(begin(iter), end(iter), 0);
       T f;
-      while( (f=dfs(s,t,INF)) > 0){
+      while((f=dfs(s,t,INF)) > 0){
         flow += f;
       }
     }
@@ -56,8 +56,8 @@ public:
   }
   void add_edge(int from, int to, T cap){
     int tos = Graph[to].size(), froms = Graph[from].size();
-    Graph[from].pb(((edge){to, cap, tos}));
-    Graph[to].pb(((edge){from, 0, froms}));
+    Graph[from].push_back(((edge){to, cap, tos}));
+    Graph[to].push_back(((edge){from, 0, froms}));
   }
 }; // END class MaximumFlow
 
