@@ -18,6 +18,7 @@ public:
   }
   inline bool same(int x, int y){ return find(x) == find(y); }
   inline int size(int x){ return -par[find(x)]; }
+  inline bool isroot(int x) const { return par[x] < 0; }
 };
 
 
