@@ -100,6 +100,28 @@ inline long CRT(long a, long m1, long b, long m2){
 }
 
 
+// n!=a p^e, return a mod p O(log_p n)
+long fact[MX + 5];
+long mod_fact(long n, long p, long &e){
+  e = 0;
+  if(n == 0) return 1;
+  long res = mod_fact(n/p, p, e);
+  e += n/p;
+  if(n/p %2 != 0) return res * (p - fact[n%p]) %p;
+  return res * fact[n%p] %p;
+}
+// nCk mod p O(log_p n)
+long mod_comb(long n, long k, long p) {
+  if (n < 0 || k < 0 || n < k) return 0;
+  long e1,e2,e3;
+  long a1 = mod_fact(n,p,e1);
+  long a2 = mod_fact(k,p,e2);
+  long a3 = mod_fact(n-k,p,e3);
+  if(e1 > e2+e3) return 0;
+  return a1 * mod_inv(a2 * a3 % p, p) % p;
+}
+
+
 // Euler's totient function
 // O(sqrt(n))
 long eulerPhi(long n) {
