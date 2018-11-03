@@ -174,6 +174,15 @@ int inConvex(const Point &p, const vector<Point>& conv){
   return EQ(cr, 0) ? 2 : cr < 0 ? 0 : 1;
 }
 
+// 多角形の符号付面積
+Double area(const vector<Point>& ps) {
+  Double a = 0;
+  rep(i, ps.size()){
+    a += cross(ps[i], ps[(i+1)%ps.size()]);
+  }
+  return a/2;
+}
+
 
 // キャリパー法 最遠点対探索，最遠距離を返す
 // 入力は凸包となっていること．
@@ -404,13 +413,6 @@ VP convexCut(const VP& ps, P a1, P a2) {
     if (ccwc * ccwn == -1) ret.push_back(crosspointLL(a1, a2, ps[i], ps[(i + 1) % n]));
   }
   return ret;
-}
-
-// 多角形の符号付面積
-D area(const VP& ps) {
-  D a = 0;
-  rep (i, ps.size()) a += cross(ps[i], ps[(i+1) % ps.size()]);
-  return a / 2;
 }
 
 // 多角形の幾何学的重心
