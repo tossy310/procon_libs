@@ -48,6 +48,13 @@ public:
     while(n<m) n*=2;
     data.resize(2*n, INF);
   }
+  SegTree(const vector<T> &v){
+    n=1;
+    while(n<(int)v.size()) n*=2;
+    data.resize(2*n, e);
+    rep(i,v.size()) data[i+n] = v[i];
+    for(int i=n-1; i>0; i--) data[i] = min(data[i*2], data[i*2+1]);
+  }
   T query(int l, int r){
     T ret = INF;
     for(l+=n, r+=n; l<r; l/=2, r/=2){
@@ -80,6 +87,16 @@ public:
     while(n<m) n*=2;
     data.resize(n+1, INF);
     pos.resize(2*n, n);
+  }
+  SegTree(const vector<T> &v) : data(v) {
+    n=1;
+    while(n<(int)v.size()) n*=2;
+    data.resize(n+1, INF);
+    pos.resize(2*n, v.size());
+    for(int i=0; i<(int)v.size(); i++) pos[i+n] = i;
+    for(int i=n-1; i>0; i--) {
+      pos[i] = (data[pos[i*2]] < data[pos[i*2+1]]) ? pos[i*2] : pos[i*2+1];
+    }
   }
   int query(int l, int r){ // position of min
     int ret = n;
