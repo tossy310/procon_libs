@@ -64,12 +64,13 @@ vector<int> manacher(const string &s){
   int n = s.size();
   int i=0, j=0;
   vector<int> a(n);
-  while(i-j>=0 && i+j<n && s[i-j]==s[i+j]) j++;
-  a[i]=j;
-  int k = 1;
-  while(i-k>=0 && i+k<n && k+a[i-k]<j) a[i+k]=a[i-k], k++;
-  i += k;
-  j -= k;
+  while (i < n) {
+    while (i-j >= 0 && i+j < n && s[i-j] == s[i+j]) ++j;
+    a[i] = j;
+    int k = 1;
+    while (i-k >= 0 && i+k < n && k+a[i-k] < j) a[i+k] = a[i-k], ++k;
+    i += k; j -= k;
+  }
   return a;
 }
 // 奇数長の回文しか対応していないが，a$b$c$...みたいにすれば偶数長にも対応可
