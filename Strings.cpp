@@ -59,7 +59,7 @@ vector<int> kmp_match(const string &txt, const string &pat, const vector<int> &s
 }
 
 // manacher : a[i] = s[i] を中心とする最長の回文の半径 O(N)
-// [TODO] verify
+// verified in https://beta.atcoder.jp/contests/ukuku09/tasks/ukuku09_d
 vector<int> manacher(const string &s){
   int n = s.size();
   int i=0, j=0;
