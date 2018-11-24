@@ -14,6 +14,7 @@ public:
   ModInt operator - (const ModInt &p) const { return ModInt(*this) -= p; }
   ModInt operator * (const ModInt &p) const { return ModInt(*this) *= p; }
   ModInt operator / (const ModInt &p) const { return ModInt(*this) /= p; }
+  ModInt operator ^ (const int64_t y) const { return pow(y); }
   bool operator == (const ModInt &p) const { return x == p.x; }
   bool operator != (const ModInt &p) const { return x != p.x; }
   ModInt operator = (const int64_t y) { return *this = ModInt(y); }
