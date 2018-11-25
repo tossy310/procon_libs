@@ -434,3 +434,50 @@ public:
     return query(a,b,x,0,0,n);
   }
 };
+
+// TODO generalize
+// verified in AOJ1068
+template<typename T>
+class SegTree2D {
+public:
+  int h,w;
+  vector<vector<T>> data;
+  SegTree2D(const int _h, const int _w){
+    h=1;w=1;
+    while(h<_h) h*=2;
+    while(w<_w) w*=2;
+    data.resize(2*h, vector<T>(2*w, -INF));
+  }
+  T query(const int kh, int wl, int wr) const {
+    T ret = -INF;
+    for(wl+=w, wr+=w; wl<wr; wl/=2, wr/=2){
+      if(wl&1) ret = max(ret, data[kh][wl++]);
+      if(wr&1) ret = max(ret, data[kh][--wr]);
+    }
+    return ret;
+  }
+  T query(int hl, int hr, const int wl, const int wr) const {
+    T ret = -INF;
+    for(hl+=h, hr+=h; hl<hr; hl/=2, hr/=2){
+      if(hl&1) ret = max(ret, query(hl++,wl,wr));
+      if(hr&1) ret = max(ret, query(--hr,wl,wr));
+    }
+    return ret;
+  }
+  void updateInner(const int kh, int kw, const T a){
+    kw += w;
+    data[kh][kw] = a;
+    while(kw > 0){
+      kw = kw / 2;
+      data[kh][kw] = max(data[kh][kw*2], data[kh][kw*2+1]);
+    }
+  }
+  void update(int kh, const int kw, const T a){
+    kh += h;
+    updateInner(kh, kw, a);
+    while(kh > 0){
+      kh = kh/2;
+      updateInner(kh, kw, max(data[kh*2][kw+w], data[kh*2+1][kw+w]));
+    }
+  }
+};
