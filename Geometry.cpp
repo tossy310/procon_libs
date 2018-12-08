@@ -12,6 +12,23 @@ namespace std {
   }
 }
 
+// =========== In case only integer arithmetics ===========
+using Point = pair<long long, long long>;
+#define X first
+#define Y second
+namespace std {
+  Point operator+(const Point &a, const Point &b){
+    return {a.X + b.X, a.Y + b.Y};
+  }
+  Point operator-(const Point &a, const Point &b){
+    return {a.X - b.X, a.Y - b.Y};
+  }
+  bool operator<(const Point &a, const Point &b){
+    return a.X != b.X ? a.X < b.X : a.Y < b.Y;
+  }
+}
+// ===========
+
 // 内積 dot(a,b) = |a||b|cosθ
 Double dot(const Point &a, const Point &b){ return a.X*b.X + a.Y*b.Y; }
 // 外積 cross(a,b) = |a||b|sinθ
