@@ -110,7 +110,7 @@ Point crosspointLL(const Point &a1, const Point &a2, const Point &b1, const Poin
   assert(!EQ(d2, 0));
   return a1 + d1/d2 * (a2-a1);
 }
-vector<Point> crosspointLC(const Point &a1, const Point &a2, const Point &c, const Double r){ // not verified
+vector<Point> crosspointLC(const Point &a1, const Point &a2, const Point &c, const Double r){
   vector<Point> ps;
   Point ft = proj(a1, a2, c);
   if(!GE(r*r, norm(ft-c))) return ps;
@@ -236,6 +236,16 @@ vector<Point> circlesPointsRadius(const Point &a, const Point &b, const Ddouble 
   return cs;
 }
 
+// 点pから円aへの接線の接点
+vector<Point> tangentPoints(const Point &a, const Double ar, const Point &p) {
+  vector<Point> ps;
+  Double sin = ar / abs(p-a);
+  if (!LE(sin, 1)) return ps;  // ここでNaNも弾かれる
+  Double t = M_PI_2 - asin(min(sin, 1.0));
+  ps.push_back(a + (p-a)*polar(sin, t));
+  if (!EQ(sin, 1)) ps.push_back(a + (p-a)*polar(sin, -t));
+  return ps;
+}
 
 // ConvexHull with Vertex addition
 // O((N+Q)logN)
@@ -342,17 +352,6 @@ inline P perf(const L& l, const P& p) {
 // 線分sを直線bに射影した線分を計算する
 inline L proj(const L& s, const L& b) {
      return (L){perf(b, s.pos), proj(s.dir, b.dir)};
-}
-
-// 点pから円aへの接線の接点
-VP tangentPoints(P a, D ar, P p) {
-  VP ps;
-  D sin = ar / abs(p-a);
-  if (!LE(sin, 1)) return ps;  // ここでNaNも弾かれる
-  D t = M_PI_2 - asin(min(sin, 1.0));
-  ps.push_back(                 a + (p-a)*polar(sin, t));
-  if (!EQ(sin, 1)) ps.push_back(a + (p-a)*polar(sin, -t));
-  return ps;
 }
 
 // 2円の共通接線。返される各直線に含まれる頂点は円との接点となる
