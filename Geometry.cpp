@@ -28,6 +28,9 @@ namespace std {
   }
 }
 // ===========
+/*
+  p = polar(1, r) : abs(p) = 1, arg(p) = r [rad] を生成。オイラーの公式より、これを掛ければ原点中心に r 回転。
+*/
 
 // 内積 dot(a,b) = |a||b|cosθ
 Double dot(const Point &a, const Point &b){ return a.X*b.X + a.Y*b.Y; }
