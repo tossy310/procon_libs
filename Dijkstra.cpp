@@ -2,10 +2,10 @@
 template<class T>
 void dijkstra(const vector<vector<pair<int,T>>> &vec, vector<T> &d, int from=0){
   using P = pair<T,int>;
-  fill(all(d), INF);
+  fill(begin(d), end(d), INF);
   priority_queue<P, vector<P>, greater<P>> pq;
   d[from] = 0;
-  pq.push(mp(0,from));
+  pq.push(make_pair(0,from));
   while(!pq.empty()){
     auto p = pq.top(); pq.pop();
     int v = p.second;
@@ -16,7 +16,7 @@ void dijkstra(const vector<vector<pair<int,T>>> &vec, vector<T> &d, int from=0){
       int ni = to.first;
       if(d[ni] > nd){
         d[ni] = nd;
-        pq.push(mp(nd, ni));
+        pq.push(make_pair(nd, ni));
       }
     }
   }
