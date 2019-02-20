@@ -47,7 +47,6 @@ T query(T x) const {
 
 
 // Dynamic Convex Hull Trick
-// TODO verify
 // from https://github.com/niklasb/contest-algos/blob/master/convex_hull/dynamic.cpp
 const long is_query = -(1LL<<62);
 struct CHTLine {
@@ -71,6 +70,7 @@ struct DynamicCHT : public multiset<CHTLine> {
     }
     auto x = prev(y);
     if(z == end()) return y->m == x->m && y->b <= x->b;
+    // care about overflow in next line
     return (x->b - y->b)*(z->m - y->m) >= (y->b - z->b)*(y->m - x->m);
   }
   void insert_line(long m, long b){
@@ -81,6 +81,7 @@ struct DynamicCHT : public multiset<CHTLine> {
     while(y != begin() && bad(prev(y))) erase(prev(y));
   }
   long eval(long x){
+    if(size() == 0) { /* do something or return LLONG_MIN */ }
     auto l = *lower_bound((CHTLine){x, is_query});
     return l.m * x + l.b;
   }
