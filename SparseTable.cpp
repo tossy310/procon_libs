@@ -1,6 +1,36 @@
 template<typename T>
 class SparseTable {
 public:
+  vector<int> lg_tbl;
+  vector<T> tbl[20];
+  int n;
+  T (*op)(const T&, const T&);
+  SparseTable(const vector<T> &vec, T (*_op)(const T&, const T&)) : op(_op){
+    n = vec.size();
+    lg_tbl.resize(n+1, 0);
+    int v = 0;
+    rep(i,3,n+1){
+      if((1<<v)*2<i) v++;
+      lg_tbl[i] = v;
+    }
+    tbl[0] = vec;
+    for(int k=1; (1<<k)<=n; k++){
+      tbl[k].resize(n);
+      rep(i,n){
+        tbl[k][i] = op(tbl[k-1][i], tbl[k-1][min(n-1,i+(1<<(k-1)))]);
+      }
+    }
+  }
+  T query(int l, int r){  // [l,r)
+    int lg = lg_tbl[r-l];
+    return op(tbl[lg][l], tbl[lg][r-(1<<lg)]);
+  }
+};
+
+// Disjoint version.
+template<typename T>
+class SparseTable {
+public:
   vector<T> tbl[20];
   vector<T> tbr[20];
   int n;
