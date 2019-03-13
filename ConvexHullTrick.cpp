@@ -86,3 +86,57 @@ struct DynamicCHT : public multiset<CHTLine> {
     return l.m * x + l.b;
   }
 };
+
+
+template<class T>
+class LiChaoTree {
+private:
+  struct Line {
+    T a, b;
+    Line(T _a, T _b) : a(_a), b(_b) {}
+    inline T get(T x) const { return a*x + b; }
+    inline bool over(const Line &lb, const T &x) const {
+      return get(x) < lb.get(x);
+    }
+  };
+  void update(Line &x, int k, int l, int r) {
+    int mid = (l + r)/2;
+    auto lover = x.over(seg[k], xs[l]), rover = x.over(seg[k], xs[mid]);
+    if(rover) swap(seg[k], x);
+    if(l+1 >= r) return;
+    else if(lover != rover) update(x, 2*k+1, l, mid);
+    else update(x, 2*k+2, mid, r);
+  }
+  T query(T x, int k) const {
+    k += sz - 1;
+    T ret = seg[k].get(x);
+    while(k > 0) {
+      k = (k - 1) / 2;
+      ret = min(ret, seg[k].get(x));
+    }
+    return ret;
+  }
+public:
+  vector<T> xs;
+  vector<Line> seg;
+  int sz = 0;
+  LiChaoTree() {}
+  LiChaoTree(const vector<T> &x, T _INF) : xs(x) {
+    sz = 1;
+    while(sz < (int)xs.size()) sz *= 2;
+    while((int)xs.size() < sz) xs.push_back(xs.back() + 1);
+    seg.assign(2*sz - 1, Line(0, _INF));
+  }
+  void update(T a, T b) { // ax+b
+    if(sz == 0) return;
+    Line l(a, b);
+    update(l, 0, 0, sz);
+  }
+  T query(int k) const { // min-query to k-th x (xs[k])
+    return query(xs[k], k);
+  }
+  T query_x(T x) const { // min-query x (actual value)
+    int k = lower_bound(begin(xs), end(xs), x) - begin(xs);
+    return query(x, k);
+  }
+};
