@@ -39,4 +39,8 @@ public:
     }
     return parent[0][u];
   }
+  int distance(int a, int b) const { // only for unweighted graph
+    int p = query(a,b);
+    return depth[a] + depth[b] - 2*depth[p];
+  }
 };
