@@ -10,10 +10,10 @@ public:
   ModInt &operator *= (const ModInt &p){ x = (int) (1LL * x * p.x % mod); return *this; }
   ModInt &operator /= (const ModInt &p){ *this *= p.inverse(); return *this; }
   ModInt operator -() const { return ModInt(-x); }
-  ModInt operator + (const ModInt &p) const { return ModInt(*this) += p; }
-  ModInt operator - (const ModInt &p) const { return ModInt(*this) -= p; }
-  ModInt operator * (const ModInt &p) const { return ModInt(*this) *= p; }
-  ModInt operator / (const ModInt &p) const { return ModInt(*this) /= p; }
+  friend ModInt operator + (const ModInt &l, const ModInt &r){ return ModInt(l) += r; }
+  friend ModInt operator - (const ModInt &l, const ModInt &r){ return ModInt(l) -= r; }
+  friend ModInt operator * (const ModInt &l, const ModInt &r){ return ModInt(l) *= r; }
+  friend ModInt operator / (const ModInt &l, const ModInt &r){ return ModInt(l) /= r; }
   ModInt operator ^ (const int64_t y) const { return pow(y); }
   bool operator == (const ModInt &p) const { return x == p.x; }
   bool operator != (const ModInt &p) const { return x != p.x; }
@@ -35,7 +35,7 @@ public:
     }
     return ModInt(r);
   }
-  friend ostream &operator << (ostream &os, const ModInt<mod> &p) { return os<<p.x; }
-  friend istream &operator >> (istream &is, ModInt<mod> &a) { int64_t x; is>>x; a = ModInt<mod>(x); return is; }
+  friend ostream &operator << (ostream &os, const ModInt &p) { return os<<p.x; }
+  friend istream &operator >> (istream &is, ModInt &a) { int64_t x; is>>x; a = ModInt(x); return is; }
 };
 using Int = ModInt<>;
