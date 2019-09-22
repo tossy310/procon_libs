@@ -10,10 +10,10 @@ public:
   ModInt &operator *= (const ModInt &p){ x = (int) (1LL * x * p.x % mod); return *this; }
   ModInt &operator /= (const ModInt &p){ *this *= p.inverse(); return *this; }
   ModInt operator -() const { return ModInt(-x); }
-  friend ModInt operator + (const ModInt &l, const ModInt &r){ return ModInt(l) += r; }
-  friend ModInt operator - (const ModInt &l, const ModInt &r){ return ModInt(l) -= r; }
-  friend ModInt operator * (const ModInt &l, const ModInt &r){ return ModInt(l) *= r; }
-  friend ModInt operator / (const ModInt &l, const ModInt &r){ return ModInt(l) /= r; }
+  friend ModInt operator + (ModInt l, const ModInt &r){ return l += r; }
+  friend ModInt operator - (ModInt l, const ModInt &r){ return l -= r; }
+  friend ModInt operator * (ModInt l, const ModInt &r){ return l *= r; }
+  friend ModInt operator / (ModInt l, const ModInt &r){ return l /= r; }
   ModInt operator ^ (const int64_t y) const { return pow(y); }
   bool operator == (const ModInt &p) const { return x == p.x; }
   bool operator != (const ModInt &p) const { return x != p.x; }
