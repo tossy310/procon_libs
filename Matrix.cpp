@@ -1,9 +1,10 @@
-typedef vector<vector<long>> mat;
+using Type = long; // or double or ModInt
+using mat = vector<vector<Type>>;
 
 // return A*B
 mat mat_mul(const mat &A, const mat &B){
   int n=A.size(), m=B[0].size(), l=B.size();
-  mat ret(n, vector<long>(m, 0));
+  mat ret(n, vector<Type>(m, 0));
   rep(i,n) rep(k,l) if(A[i][k]!=0) rep(j,m){
     (ret[i][j] += A[i][k] * B[k][j]) %= MOD;
   }
@@ -13,7 +14,7 @@ mat mat_mul(const mat &A, const mat &B){
 // A^p
 mat mat_pow(const mat &A, long p){
   int n = A.size();
-  mat tmp(A), ret(n, vector<long>(n,0));
+  mat tmp(A), ret(n, vector<Type>(n,0));
   rep(i,n) ret[i][i] = 1;
   while(p>0){
     if(p&1) ret = mat_mul(tmp, ret);
@@ -24,11 +25,12 @@ mat mat_pow(const mat &A, long p){
 }
 // Aが零行列で零行列を返さないので注意．（0^xの定義にもよる）
 
+// Not well tested.
 #define EPS 1e-9
 // solve Ax=b O(N^3)
-vector<double> gaussJordan(const vector<vector<double>> &A, const vector<double> &b){
+vector<Type> gaussJordan(const mat &A, const vector<Type> &b){
   int n=A.size();
-  vector<vector<double>> B(n, vector<double>(n+1));
+  mat B(n, vector<Type>(n+1));
   rep(i,n) rep(j,n) B[i][j] = A[i][j];
   rep(i,n) B[i][n] = b[i];
 
@@ -37,14 +39,44 @@ vector<double> gaussJordan(const vector<vector<double>> &A, const vector<double>
     rep(j,i,n) if(abs(B[j][i]) > abs(B[pivot][i])) pivot = j;
     swap(B[i], B[pivot]);
 
-    if(abs(B[i][i]) < EPS) return vector<double>();
+    if(abs(B[i][i]) < EPS) return vector<Type>();
 
     rep(j,i+1,n+1) B[i][j] /= B[i][i];
     rep(j,n) if(i!=j) rep(k,i+1,n+1) B[j][k] -= B[j][i] * B[i][k];
   }
-  vector<double> x(n);
+  vector<Type> x(n);
   rep(i,n) x[i] = B[i][n];
   return x;
+}
+
+
+// Inverse matrix. Not well tested.
+mat inverse(mat A){
+  int n = A.size();
+  assert(n > 0 && (int)A[0].size() == n);
+
+  mat inv(n, vector<Type>(n, 0));
+  rep(i,n) inv[i][i] = 1;
+
+  rep(i,n){
+    int pivot = i;
+    rep(j,i,n) if(abs(A[j][i]) > abs(A[pivot][i])) pivot = j;
+    swap(A[i], A[pivot]);
+    swap(inv[i], inv[pivot]);
+    Type tmp = Type(1) / A[i][i];
+    rep(j,n) {
+      A[i][j] *= tmp;
+      inv[i][j] *= tmp;
+    }
+    rep(j,n) if(i != j){
+      Type tmp2 = A[j][i];
+      rep(k, n){
+        A[j][k] -= A[i][k] * tmp2;
+        inv[j][k] -= inv[i][k] * tmp2;
+      }
+    }
+  }
+  return inv;
 }
 
 
