@@ -227,13 +227,13 @@ Double caliper(const vector<Point> &conv){
 
 
 // 点aと点bを通り、半径がrの円の中心を返す
-vector<Point> circlesPointsRadius(const Point &a, const Point &b, const Ddouble r){
+vector<Point> circlesPointsRadius(const Point &a, const Point &b, const Double r){
   vector<Point> cs;
-  Ppoint abH = (b-a)*0.5;
+  Point abH = (b-a)*0.5;
   Double d = abs(abH);
   if(d == 0 || d > r) return cs;  // a==b  or  abs(a-b) > 2r
   Double dN = sqrt(r*r - d*d);
-  Point n = abH * P(0,1) * (dN / d);
+  Point n = abH * Point(0,1) * (dN / d);
   cs.push_back(a + abH + n);
   if(dN > 0) cs.push_back(a + abH - n);
   return cs;
